@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spy Game</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            width: 90vw;
+            max-width: 200px;
+            height: calc(90vw * 1.5);
+            max-height: 300px;
+            perspective: 1000px;
+            margin: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .flipped .inner {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+
+        .back {
+            background: #4e73df;
+            color: white;
+        }
+
+        .front {
+            background: white;
+            color: #333;
+            transform: rotateY(180deg);
+            position: relative;
+        }
+
+        .execution-result {
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .execution-result.success {
+            color: #388e3c;
+        }
+
+        .execution-result.fail {
+            color: #d32f2f;
+        }
+
+        #game {
+            display: none;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 800px;
+        }
+
+        button,
+        input {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        #startBtn,
+        #restartBtn,
+        #doneFlipBtn,
+        #confirmNamesBtn {
+            background-color: #2e59d9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #startBtn:hover,
+        #restartBtn:hover,
+        #doneFlipBtn:hover,
+        #confirmNamesBtn:hover {
+            background-color: #224abe;
+        }
+
+        #doneFlipBtn {
+            margin-top: 10px;
+        }
+
+        .player-label {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #nameInputContainer input {
+            display: block;
+            margin-bottom: 8px;
+            width: 200px;
+            font-size: 16px;
+            padding: 6px 8px;
+        }
+
+        #message {
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        #langToggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 6px 10px;
+            font-size: 14px;
+            background: #2e59d9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="langToggle">EN</button>
+
+    <div id="start">
+        <input id="playerCount" type="number" min="2" placeholder="玩家人數" />
+        <button id="startBtn">開始遊戲</button>
+
+        <div id="nameInputContainer" style="margin-top: 10px;"></div>
+        <button id="confirmNamesBtn" style="display:none;">確定名字</button>
+    </div>
+
+    <div id="message"></div>
+
+    <div id="game"></div>
+    <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
+
+    <div id="executionResult"></div>
+    <button id="restartBtn" style="display:none;">重新遊戲</button>
+
+    <script src="config.js"></script>
+    <script>
+        const langToggle = document.getElementById('langToggle');
+        let currentLang = 'zh';
+
+        const i18n = {
+            zh: {
+                title: "誰是間諜",
+                start: "開始遊戲",
+                confirm: "確定名字",
+                restart: "重新遊戲",
+                done: "大家都翻完牌了！",
+                inputName: i => `輸入第 ${i} 位玩家名字`,
+                alert: "請輸入 2 位以上玩家",
+                missingName: i => `請輸入第 ${i} 位玩家名字`,
+                execute: "大家來處決！",
+                spy: "✅ 是間諜！",
+                notSpy: "❌ 不是間諜。",
+                placeholderCount: "玩家人數",
+                flipMe: "點我翻牌",
+                everyoneFlipped: "大家都翻完牌了！",
+                confirmNamesBtn: "確定名字",
+                doneFlipBtn: "大家來處決",
+                enterPlayerName: i => `輸入第 ${i} 位玩家名字`,
+                allFlippedAlert: "大家都翻完牌了！",
+            },
+            en: {
+                title: "Spy Game",
+                start: "Start Game",
+                confirm: "Confirm Names",
+                restart: "Restart",
+                done: "Everyone flipped!",
+                inputName: i => `Enter name for Player ${i}`,
+                alert: "Please enter at least 2 players",
+                missingName: i => `Please enter name for Player ${i}`,
+                execute: "Time to execute!",
+                spy: "✅ Is the spy!",
+                notSpy: "❌ Not the spy.",
+                placeholderCount: "Number of Players",
+                flipMe: "Tap to flip",
+                everyoneFlipped: "Everyone flipped!",
+                confirmNamesBtn: "Confirm Names",
+                doneFlipBtn: "Time to execute!",
+                enterPlayerName: i => `Enter name for Player ${i}`,
+                allFlippedAlert: "Everyone flipped!",
+            }
+        };
+
+        langToggle.onclick = () => {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            langToggle.textContent = currentLang === 'zh' ? 'EN' : '中';
+            updateText();
+        };
+
+        function updateText() {
+            document.title = i18n[currentLang].title;
+            document.getElementById('startBtn').textContent = i18n[currentLang].start;
+            document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirm;
+            document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
+            document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
+            document.getElementById('playerCount').placeholder = i18n[currentLang].placeholderCount;
+
+            const inputs = document.querySelectorAll('#nameInputContainer input');
+            inputs.forEach((input, i) => {
+                input.placeholder = i18n[currentLang].inputName(i + 1);
+            });
+        }
+
+        // 其他遊戲程式碼不變，僅將所有硬編碼文字改為 i18n[currentLang].xxx 的方式使用即可。
+
+        // 請繼續將其他文字如 alert、訊息顯示等用 i18n[currentLang] 對應替換即可。
+        // 使用 window.sets
+        console.log(window.sets);
+
+        const startBtn = document.getElementById('startBtn');
+        const confirmNamesBtn = document.getElementById('confirmNamesBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const game = document.getElementById('game');
+        const executionResult = document.getElementById('executionResult');
+        const doneFlipBtn = document.getElementById('doneFlipBtn');
+        const nameInputContainer = document.getElementById('nameInputContainer');
+        const messageDiv = document.getElementById('message');
+
+        let flippedState = [];
+        let realSpyIndex = -1;
+        let cards = [];
+        let executing = false; // 是否可執行處決
+        let lock = false; // 點擊鎖定3秒防止太快點
+        let playerCount = 0;
+        let playerNames = [];
+
+
+        startBtn.onclick = () => {
+            const num = parseInt(document.getElementById('playerCount').value);
+            if (!num || num < 2) {
+                alert(i18n[currentLang].alert);
+                return;
+            }
+            playerCount = num;
+            nameInputContainer.innerHTML = '';
+            messageDiv.style.display = 'none';
+            for (let i = 1; i <= playerCount; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = i18n[currentLang].inputName(i);
+                input.id = `playerName${i}`;
+                nameInputContainer.appendChild(input);
+            }
+            confirmNamesBtn.textContent = i18n[currentLang].confirmNamesBtn;
+            confirmNamesBtn.style.display = 'inline-block';
+            startBtn.style.display = 'none';
+            document.getElementById('playerCount').style.display = 'none';
+        };
+
+        confirmNamesBtn.onclick = () => {
+            playerNames = [];
+            for (let i = 1; i <= playerCount; i++) {
+                const val = document.getElementById(`playerName${i}`).value.trim();
+                if (!val) {
+                    messageDiv.textContent = i18n[currentLang].missingName(i);
+                    messageDiv.style.display = 'block';
+                    return;
+                }
+                playerNames.push(val);
+            }
+            messageDiv.style.display = 'none';
+            confirmNamesBtn.style.display = 'none';
+
+            initGame(playerCount, playerNames);
+        };
+
+        function checkAllFlipped() {
+            const allFlipped = flippedState.every(count => count >= 2);
+            doneFlipBtn.style.display = allFlipped ? 'inline-block' : 'none';
+        }
+
+        function initGame(playerCount, playerNames) {
+            document.getElementById('start').style.display = 'none';
+            game.style.display = 'flex';
+            game.innerHTML = '';
+            executionResult.textContent = '';
+            executionResult.className = '';
+            restartBtn.style.display = 'none';
+            doneFlipBtn.style.display = 'none';
+            flippedState = Array(playerCount).fill(0);
+            executing = false;
+
+            const set = sets[Math.floor(Math.random() * sets.length)];
+            realSpyIndex = Math.floor(Math.random() * playerCount);
+            const spyWord = set[0];
+            const normalWord = set[1];
+            const words = Array(playerCount).fill().map((_, i) => i === realSpyIndex ? spyWord : normalWord);
+
+            cards = words.map((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+      <div class="player-label">${playerNames[index]}</div>
+      <div class="inner">
+        <div class="face back">${i18n[currentLang].flipMe}</div>
+        <div class="face front">
+          <div class="img-container">
+            <img src="${word.img}" style="max-width: 100%; height: auto;" />
+          </div>
+          <div class="text-container">${word.text}</div>
+          <div class="execution-result" id="execResult${index}"></div>
+        </div>
+      </div>`;
+
+                let localLock = false;
+
+                card.addEventListener('click', () => {
+                    if (lock || localLock) return;
+                    if (!executing) {
+                        if (flippedState[index] >= 2) return;
+                        const someOtherFlipped = flippedState.some((count, i) => i !== index && (count % 2 === 1));
+                        if (someOtherFlipped) return;
+
+                        card.classList.toggle('flipped');
+                        flippedState[index]++;
+                        checkAllFlipped();
+
+                        executionResult.textContent = '';
+                        executionResult.className = '';
+
+                        lock = true;
+                        localLock = true;
+                        setTimeout(() => {
+                            lock = false;
+                            localLock = false;
+                        }, 1000);
+
+                    } else {
+                        const execDiv = document.getElementById(`execResult${index}`);
+                        if (execDiv.textContent !== '') return;
+
+                        if (index === realSpyIndex) {
+                            execDiv.textContent = i18n[currentLang].spy;
+                            execDiv.className = 'execution-result success';
+                        } else {
+                            execDiv.textContent = i18n[currentLang].notSpy;
+                            execDiv.className = 'execution-result fail';
+                        }
+
+                        const frontImgDiv = card.querySelector('.front .img-container');
+                        const frontTextDiv = card.querySelector('.front .text-container');
+
+                        if (frontImgDiv) frontImgDiv.style.display = 'none';
+                        if (frontTextDiv) frontTextDiv.textContent = '';
+
+                        if (!card.classList.contains('flipped')) {
+                            card.classList.add('flipped');
+                        }
+                    }
+                });
+
+                game.appendChild(card);
+                return card;
+            });
+
+            console.log("DEBUG 間諜是：", realSpyIndex + 1, spyWord.text);
+        }
+
+        restartBtn.onclick = () => {
+            game.innerHTML = '';
+            executionResult.textContent = '';
+            executionResult.className = '';
+            doneFlipBtn.style.display = 'none';
+            restartBtn.style.display = 'none';
+            document.getElementById('message').style.display = 'none';
+            executing = false;
+            flippedState = Array(playerCount).fill(0);
+
+            initGame(playerCount, playerNames);
+        };
+
+        doneFlipBtn.onclick = () => {
+            executing = true;
+            document.getElementById('message').textContent = i18n[currentLang].execute;
+            document.getElementById('message').style.display = 'block';
+            doneFlipBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block';
+            executionResult.textContent = '';
+            executionResult.className = '';
+        };
+    </script>
+</body>
+
+</html>
