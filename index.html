@@ -113,7 +113,7 @@ button, input {
 }
 
 #startBtn,
-#restartBtn,
+
 #doneFlipBtn,
 #confirmNamesBtn {
     background-color: #2e59d9;
@@ -151,12 +151,13 @@ button, input {
     display: none;
 }
 
-/* 語言切換按鈕 */
-#langToggle {
+/* 重新遊戲按鈕 */
+#restartBtn {
     position: fixed;
     top: 10px;
-    right: 10px;
+    right: 60px;
     padding: 6px 10px;
+	height: 32px;
     font-size: 14px;
     background: #2e59d9;
     color: white;
@@ -164,6 +165,23 @@ button, input {
     border-radius: 6px;
     cursor: pointer;
 }
+
+/* 語言切換按鈕 */
+#langToggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 6px 10px;
+	height: 32px;
+    font-size: 14px;
+    background: #2e59d9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
 
 /* 👉 手機橫向時強制一行顯示 4 張卡片 */
 @media (max-width: 800px) and (orientation: landscape) {
@@ -176,6 +194,7 @@ button, input {
 </head>
 
 <body>
+    <button id="restartBtn" style="display:none;">重新遊戲</button>
     <button id="langToggle">EN</button>
 
     <div id="start">
@@ -192,7 +211,7 @@ button, input {
     <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
 
     <div id="executionResult"></div>
-    <button id="restartBtn" style="display:none;">重新遊戲</button>
+
 
     <script src="config.js"></script>
     <script>
@@ -336,7 +355,7 @@ button, input {
             game.innerHTML = '';
             executionResult.textContent = '';
             executionResult.className = '';
-            restartBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block';
             doneFlipBtn.style.display = 'none';
             flippedState = Array(playerCount).fill(0);
             executing = false;
@@ -422,7 +441,7 @@ button, input {
             executionResult.textContent = '';
             executionResult.className = '';
             doneFlipBtn.style.display = 'none';
-            restartBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block';
             document.getElementById('message').style.display = 'none';
             executing = false;
             flippedState = Array(playerCount).fill(0);
