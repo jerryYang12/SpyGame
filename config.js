@@ -34,7 +34,6 @@ window.sets = [
   [ { text: "電影 Movie", img: "" }, { text: "音樂 Music", img: "" } ],
   [ { text: "城市 City", img: "" }, { text: "鄉村 Village", img: "" } ],
   [ { text: "雪 Snow", img: "" }, { text: "冰 Ice", img: "" } ],
-  [ { text: "太空 Space", img: "" }, { text: "宇宙 Universe", img: "" } ],
   [ { text: "鳳梨 Pineapple", img: "" }, { text: "西瓜 Watermelon", img: "" } ],
   [ { text: "麵包 Bread", img: "" }, { text: "蛋糕 Cake", img: "" } ],
   [ { text: "蜜蜂 Bee", img: "" }, { text: "螞蟻 Ant", img: "" } ],
@@ -46,11 +45,8 @@ window.sets = [
   [ { text: "雨 Rain", img: "" }, { text: "雷 Thunder", img: "" } ],
   [ { text: "雲朵 Cloud", img: "" }, { text: "風 Wind", img: "" } ],
   [ { text: "花園 Garden", img: "" }, { text: "森林 Forest", img: "" } ],
-  [ { text: "畫畫 Painting", img: "" }, { text: "音樂會 Concert", img: "" } ],
-  [ { text: "運動 Sports", img: "" }, { text: "比賽 Competition", img: "" } ],
   [ { text: "醫院 Hospital", img: "" }, { text: "藥局 Pharmacy", img: "" } ],
   [ { text: "餐廳 Restaurant", img: "" }, { text: "咖啡館 Cafe", img: "" } ],
-  [ { text: "花瓣 Petal", img: "" }, { text: "樹葉 Leaf", img: "" } ],
   [ { text: "河流 Stream", img: "" }, { text: "湖泊 Lake", img: "" } ],
   [ { text: "演員 Actor", img: "" }, { text: "歌手 Singer", img: "" } ],
   [ { text: "眼睛 Eye", img: "" }, { text: "耳朵 Ear", img: "" } ],
@@ -78,20 +74,20 @@ window.sets = [
     { text: "柯南 Conan", img: "https://s.yimg.com/ny/api/res/1.2/8kTPSQoscFrR0L0Tni5dIA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTcwNTtoPTQ0Mw--/https://s.yimg.com/os/creatr-uploaded-images/2021-07/ad267e70-e14b-11eb-bde7-a95c48555207" } 
   ],
   [ 
-    { text: "皮卡丘 Pikachu", img: "" }, 
-    { text: "卡比獸 Snorlax", img: "" }, 
+    { text: "皮卡丘 Pikachu", img: "https://upload.wikimedia.org/wikipedia/zh/7/77/Pikachu.png" }, 
+    { text: "卡比獸 Snorlax", img: "https://upload.wikimedia.org/wikipedia/zh/0/0b/Snorlax.png" }, 
   ],
   [ 
-    { text: "超夢 Mewtwo", img: "" }, 
-    { text: "謎擬Q Mimikyu", img: "" }, 
+    { text: "超夢 Mewtwo", img: "https://upload.wikimedia.org/wikipedia/zh/d/d3/Mewtwo.png" }, 
+    { text: "謎擬Q Mimikyu", img: "https://upload.wikimedia.org/wikipedia/zh/2/23/Pok%C3%A9mon_Mimikyu_art.png" }, 
   ],
   [ 
-    { text: "小傑 Gon", img: "" }, 
-    { text: "奇犽 Killua", img: "" }, 
+    { text: "小傑 Gon", img: "https://bkimg.cdn.bcebos.com/pic/cc11728b4710b9128bb4b4f9cdfdfc03924522bb?x-bce-process=image/format,f_auto/quality,Q_70/resize,m_lfit,limit_1,w_536" }, 
+    { text: "奇犽 Killua", img: "https://bkimg.cdn.bcebos.com/pic/77094b36acaf2eddee6b58858b1001e9380193c7?x-bce-process=image/format,f_auto/quality,Q_70/resize,m_lfit,limit_1,w_536" }, 
   ],
   [ 
-    { text: "雷歐力 Leorio", img: "" }, 
-    { text: "庫拉皮卡 Kurapika", img: "" }, 
+    { text: "雷歐力 Leorio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7nmun5Q7puRZV_5wi1b_z_WBiS3BIPUs1-Q&s" }, 
+    { text: "庫拉皮卡 Kurapika", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREKdUEz1Ba7CFSDsz2cRBaIxdDC3mHDN6Yy3fNDlUnu1FmJJIPsLdKibZ7gmUesN9Iv6c&usqp=CAU" }, 
   ]
 ]
 
