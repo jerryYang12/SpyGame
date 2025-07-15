@@ -89,8 +89,8 @@ window.sets = [
     { text: "謎擬Q Mimikyu", img: "https://upload.wikimedia.org/wikipedia/zh/2/23/Pok%C3%A9mon_Mimikyu_art.png" } 
   ],
   [ 
-    { text: "小傑 Gon", img: "https://bkimg.cdn.bcebos.com/pic/cc11728b4710b9128bb4b4f9cdfdfc03924522bb?x-bce-process=image/format,f_auto/quality,Q_70/resize,m_lfit,limit_1,w_536" }, 
-    { text: "奇犽 Killua", img: "https://bkimg.cdn.bcebos.com/pic/77094b36acaf2eddee6b58858b1001e9380193c7?x-bce-process=image/format,f_auto/quality,Q_70/resize,m_lfit,limit_1,w_536" } 
+    { text: "小傑 Gon", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3r4lOL-6cOWmHlt4jMWHcbQ8S9XNg5ChRKw&s" }, 
+    { text: "奇犽 Killua", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe2JcsT-x1SW_61IsvsAee20FDcoFqi5H0Hg&s" } 
   ],
   [ 
     { text: "雷歐力 Leorio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7nmun5Q7puRZV_5wi1b_z_WBiS3BIPUs1-Q&s" }, 

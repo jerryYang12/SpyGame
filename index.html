@@ -412,6 +412,7 @@ button, input {
                         if (index === realSpyIndex) {
                             execDiv.textContent = i18n[currentLang].spy;
                             execDiv.className = 'execution-result success';
+							document.getElementById('message').textContent = `${spyWord.text}, ${normalWord.text}`;
                         } else {
                             execDiv.textContent = i18n[currentLang].notSpy;
                             execDiv.className = 'execution-result fail';
@@ -432,7 +433,7 @@ button, input {
                 game.appendChild(card);
                 return card;
             });
-
+            console.log("DEBUG 平民是：", normalWord.text);
             console.log("DEBUG 間諜是：", realSpyIndex + 1, spyWord.text);
         }
 
