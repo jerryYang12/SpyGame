@@ -307,7 +307,7 @@ button, input {
 
         startBtn.onclick = () => {
             const num = parseInt(document.getElementById('playerCount').value);
-            if (!num || num < 2) {
+            if (!num || num < 3) {
                 alert(i18n[currentLang].alert);
                 return;
             }
@@ -403,7 +403,7 @@ button, input {
                         setTimeout(() => {
                             lock = false;
                             localLock = false;
-                        }, 1000);
+                        }, 500);
 
                     } else {
                         const execDiv = document.getElementById(`execResult${index}`);

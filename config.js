@@ -68,16 +68,21 @@ window.sets = [
   [ { text: "皮包 Wallet", img: "" }, { text: "背包 Backpack", img: "" } ],
   [ { text: "刀 Fork", img: "" }, { text: "叉 Spoon", img: "" } ],
   [ { text: "筷子 Chopsticks", img: "" }, { text: "湯匙 Spoon", img: "" } ],
+  [ { text: "雞塊 Nugget", img: "" }, { text: "雞排 Fried Chicken", img: "" } ],
+  [ { text: "奶油 Butter", img: "" }, { text: "果醬 Jam", img: "" } ],
+  [ { text: "電梯 Elevator", img: "" }, { text: "手扶梯 Escalator", img: "" } ],
+  [ { text: "布丁 Pudding", img: "" }, { text: "果凍 Jelly", img: "" } ],
+  [ { text: "雞 Chicken", img: "" }, { text: "鴨 Duck", img: "" } ],
   [
 	  { text: "棉花糖 Marshmallow", img: "https://cityfm.tw/Public/MyMedia/CityNews/20181226-1opt.jpg" },
 	  { text: "巧克力 Chocolate", img: "https://upload.wikimedia.org/wikipedia/commons/7/70/Chocolate_%28blue_background%29.jpg" }
   ],
   [
 	{ text: "瑪利歐 Mario", img: "https://images.ctfassets.net/o5v89n4kg6h4/2QECPUVaKbEvGv8SeIlDWo/9b995b0ffa3991511c603cf0983e8f85/2-1.jpg?w=738&fm=webp"},
-	{ text: "路易吉 Luigi", img: "https://static.wikia.nocookie.net/mario/images/2/22/Luigi_MKGP2.jpg/revision/latest/scale-to-width-down/250?cb=20100717170346"}
+	{ text: "路易吉 Luigi", img: "https://dwfavn5d0m4r1.cloudfront.net/App_Images/750/ChannelProduct/2024/0723/b3e8537f-ebbc-44ee-a7bd-699ff92fc8bc.jpg.webp"}
   ],
   [ 
-    { text: "屁屁偵探 Butt Detective", img: "https://www.avex.com.tw/Butt-Detective/images/kv-peo.svg" }, 
+    { text: "屁屁偵探 Butt Detective", img: "https://images.chinatimes.com/newsphoto/2020-12-29/656/20201229005998.jpg" }, 
     { text: "柯南 Conan", img: "https://s.yimg.com/ny/api/res/1.2/8kTPSQoscFrR0L0Tni5dIA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTcwNTtoPTQ0Mw--/https://s.yimg.com/os/creatr-uploaded-images/2021-07/ad267e70-e14b-11eb-bde7-a95c48555207" } 
   ],
   [ 
