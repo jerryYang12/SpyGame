@@ -41,6 +41,10 @@ body {
     margin-bottom: 30px;
 }
 
+.card, .card * {
+    user-select: none;
+}
+
 /* 卡片翻轉效果 */
 .inner {
     width: 100%;
@@ -64,7 +68,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
     text-align: center;
     padding: 10px;
     box-sizing: border-box;
@@ -96,7 +100,7 @@ body {
 /* 翻牌後的執行結果訊息 */
 .execution-result {
 	margin-top: 10px;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
 }
 .execution-result.success {
@@ -145,10 +149,10 @@ button, input {
 
 /* 提示訊息 */
 #message {
-    color: red;
-    font-size: 24px;
+    color: #A52A2A;
+    font-size: 16px;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     display: none;
 }
 
@@ -228,16 +232,12 @@ button, input {
                 inputName: i => `輸入第 ${i} 位玩家名字`,
                 alert: "請輸入 2 位以上玩家",
                 missingName: i => `請輸入第 ${i} 位玩家名字`,
+				flip: "請翻牌！",
                 execute: "大家來處決！",
-                spy: "✅ 是間諜！",
+                spy: "✅ 是間諜🕵️！",
                 notSpy: "❌ 不是間諜。",
                 placeholderCount: "玩家人數",
                 flipMe: "點我翻牌",
-                everyoneFlipped: "大家都翻完牌了！",
-                confirmNamesBtn: "確定名字",
-                doneFlipBtn: "大家來處決",
-                enterPlayerName: i => `輸入第 ${i} 位玩家名字`,
-                allFlippedAlert: "大家都翻完牌了！",
             },
             en: {
                 title: "Spy Game",
@@ -248,16 +248,12 @@ button, input {
                 inputName: i => `Enter name for Player ${i}`,
                 alert: "Please enter at least 2 players",
                 missingName: i => `Please enter name for Player ${i}`,
-                execute: "Time to execute!",
-                spy: "✅ Is the spy!",
+                flip: "Flip in turn!",
+				execute: "Time to execute!",
+                spy: "✅ Is the spy🕵️!",
                 notSpy: "❌ Not the spy.",
                 placeholderCount: "Number of Players",
                 flipMe: "Tap to flip",
-                everyoneFlipped: "Everyone flipped!",
-                confirmNamesBtn: "Confirm Names",
-                doneFlipBtn: "Time to execute!",
-                enterPlayerName: i => `Enter name for Player ${i}`,
-                allFlippedAlert: "Everyone flipped!",
             }
         };
 
@@ -321,7 +317,7 @@ button, input {
                 input.id = `playerName${i}`;
                 nameInputContainer.appendChild(input);
             }
-            confirmNamesBtn.textContent = i18n[currentLang].confirmNamesBtn;
+            confirmNamesBtn.textContent = i18n[currentLang].confirm;
             confirmNamesBtn.style.display = 'inline-block';
             startBtn.style.display = 'none';
             document.getElementById('playerCount').style.display = 'none';
@@ -329,16 +325,17 @@ button, input {
 
         confirmNamesBtn.onclick = () => {
             playerNames = [];
-            for (let i = 1; i <= playerCount; i++) {
-                const val = document.getElementById(`playerName${i}`).value.trim();
-                if (!val) {
-                    messageDiv.textContent = i18n[currentLang].missingName(i);
-                    messageDiv.style.display = 'block';
-                    return;
-                }
-                playerNames.push(val);
-            }
-            messageDiv.style.display = 'none';
+			for (let i = 1; i <= playerCount; i++) {
+				const val = document.getElementById(`playerName${i}`).value.trim();
+				if (!val) {
+					const randomNum = Math.floor(1 + Math.random() * 99); // 1~99（含1不含100）
+					playerNames.push(`${randomNum}`);
+				} else {
+					playerNames.push(val);
+				}
+			}
+            messageDiv.style.display = 'block';
+			messageDiv.textContent = i18n[currentLang].flip;
             confirmNamesBtn.style.display = 'none';
 
             initGame(playerCount, playerNames);
@@ -412,7 +409,7 @@ button, input {
                         if (index === realSpyIndex) {
                             execDiv.textContent = i18n[currentLang].spy;
                             execDiv.className = 'execution-result success';
-							document.getElementById('message').textContent = `${spyWord.text}, ${normalWord.text}`;
+							document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
                         } else {
                             execDiv.textContent = i18n[currentLang].notSpy;
                             execDiv.className = 'execution-result fail';
@@ -443,7 +440,8 @@ button, input {
             executionResult.className = '';
             doneFlipBtn.style.display = 'none';
             restartBtn.style.display = 'inline-block';
-            document.getElementById('message').style.display = 'none';
+			document.getElementById('message').textContent = i18n[currentLang].flip;
+            document.getElementById('message').style.display = 'block';
             executing = false;
             flippedState = Array(playerCount).fill(0);
 
