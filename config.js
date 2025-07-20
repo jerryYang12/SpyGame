@@ -23,7 +23,7 @@ window.sets = [
   [ { text: "電話 Telephone", img: "" }, { text: "郵件 Mail", img: "" } ],
   [ { text: "電燈 Light", img: "" }, { text: "風扇 Fan", img: "" } ],
   [ { text: "門 Door", img: "" }, { text: "窗 Window", img: "" } ],
-  [ { text: "球 Ball", img: "" }, { text: "蝴蝶 Butterfly", img: "" } ],
+  [ { text: "蜜蜂 Bee", img: "" }, { text: "蝴蝶 Butterfly", img: "" } ],
   [ { text: "老師 Teacher", img: "" }, { text: "學生 Student", img: "" } ],
   [ { text: "車站 Station", img: "" }, { text: "機場 Airport", img: "" } ],
   [ { text: "火車 Train", img: "" }, { text: "公車 Bus", img: "" } ],
