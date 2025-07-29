@@ -202,8 +202,9 @@ button, input {
     <button id="langToggle">EN</button>
 
     <div id="start">
-        <input id="playerCount" type="number" min="2" placeholder="玩家人數" />
-        <button id="startBtn">開始遊戲</button>
+		<input id="playerCount" type="number" min="2" placeholder="玩家人數" value="3" /><br/>
+		<input id="spyCount" type="number" min="1" placeholder="間諜人數" value="1" /><br/>
+        <button id="startBtn">開始遊戲</button><br/>
 
         <div id="nameInputContainer" style="margin-top: 10px;"></div>
         <button id="confirmNamesBtn" style="display:none;">確定名字</button>
@@ -231,12 +232,14 @@ button, input {
                 done: "大家都翻完牌了！",
                 inputName: i => `輸入第 ${i} 位玩家名字`,
                 alert: "請輸入 3 位以上玩家",
+				alert2: "間諜人數須小於玩家",
                 missingName: i => `請輸入第 ${i} 位玩家名字`,
 				flip: "請翻牌！",
                 execute: "大家來處決！",
                 spy: "✅ 是間諜🕵️！",
                 notSpy: "❌ 不是間諜。",
                 placeholderCount: "玩家人數",
+				spyCountPlaceholder: "間諜人數",
                 flipMe: "點我翻牌",
             },
             en: {
@@ -247,12 +250,14 @@ button, input {
                 done: "Everyone flipped!",
                 inputName: i => `Enter name for Player ${i}`,
                 alert: "Please enter at least 3 players",
+				alert2: "Spies can't exceed players",
                 missingName: i => `Please enter name for Player ${i}`,
                 flip: "Flip in turn!",
 				execute: "Time to execute!",
                 spy: "✅ Is the spy🕵️!",
                 notSpy: "❌ Not the spy.",
                 placeholderCount: "Number of Players",
+				spyCountPlaceholder: "Number of Spies",
                 flipMe: "Tap to flip",
             }
         };
@@ -270,7 +275,8 @@ button, input {
             document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
             document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
             document.getElementById('playerCount').placeholder = i18n[currentLang].placeholderCount;
-
+			document.getElementById('spyCount').placeholder = i18n[currentLang].spyCountPlaceholder;
+			
             const inputs = document.querySelectorAll('#nameInputContainer input');
             inputs.forEach((input, i) => {
                 input.placeholder = i18n[currentLang].inputName(i + 1);
@@ -299,29 +305,40 @@ button, input {
         let lock = false; // 點擊鎖定3秒防止太快點
         let playerCount = 0;
         let playerNames = [];
+		let foundSpiesCount = 0;
 
 
         startBtn.onclick = () => {
-            const num = parseInt(document.getElementById('playerCount').value);
-            if (!num || num < 3) {
-                alert(i18n[currentLang].alert);
-                return;
-            }
-            playerCount = num;
-            nameInputContainer.innerHTML = '';
-            messageDiv.style.display = 'none';
-            for (let i = 1; i <= playerCount; i++) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.placeholder = i18n[currentLang].inputName(i);
-                input.id = `playerName${i}`;
-                nameInputContainer.appendChild(input);
-            }
-            confirmNamesBtn.textContent = i18n[currentLang].confirm;
-            confirmNamesBtn.style.display = 'inline-block';
-            startBtn.style.display = 'none';
-            document.getElementById('playerCount').style.display = 'none';
-        };
+			const num = parseInt(document.getElementById('playerCount').value);
+			if (!num || num < 3) {
+				alert(i18n[currentLang].alert);
+				return;
+			}
+			
+			const spyNum = parseInt(document.getElementById('spyCount').value);
+			if (!spyNum || spyNum < 1 || spyNum >= num) {
+				alert(i18n[currentLang].alert2);
+				return;
+			}
+
+			window.spyNum = spyNum;  // 這行一定要加！
+
+			playerCount = num;
+			nameInputContainer.innerHTML = '';
+			messageDiv.style.display = 'none';
+			for (let i = 1; i <= playerCount; i++) {
+				const input = document.createElement('input');
+				input.type = 'text';
+				input.placeholder = i18n[currentLang].inputName(i);
+				input.id = `playerName${i}`;
+				nameInputContainer.appendChild(input);
+			}
+			confirmNamesBtn.textContent = i18n[currentLang].confirm;
+			confirmNamesBtn.style.display = 'inline-block';
+			startBtn.style.display = 'none';
+			document.getElementById('playerCount').style.display = 'none';
+			document.getElementById('spyCount').style.display = 'none';
+		};
 
         confirmNamesBtn.onclick = () => {
             playerNames = [];
@@ -346,6 +363,14 @@ button, input {
             doneFlipBtn.style.display = allFlipped ? 'inline-block' : 'none';
         }
 
+		function getSpyIndexes(totalPlayers, spyNum) {
+			const indexes = new Set();
+			while (indexes.size < spyNum) {
+				indexes.add(Math.floor(Math.random() * totalPlayers));
+			}
+			return Array.from(indexes);
+		}
+
         function initGame(playerCount, playerNames) {
             document.getElementById('start').style.display = 'none';
             game.style.display = 'grid';
@@ -356,12 +381,14 @@ button, input {
             doneFlipBtn.style.display = 'none';
             flippedState = Array(playerCount).fill(0);
             executing = false;
+			foundSpiesCount = 0;
 
             const set = sets[Math.floor(Math.random() * sets.length)];
-            realSpyIndex = Math.floor(Math.random() * playerCount);
-            const spyWord = set[0];
-            const normalWord = set[1];
-            const words = Array(playerCount).fill().map((_, i) => i === realSpyIndex ? spyWord : normalWord);
+            const spyNum = window.spyNum || 1;
+			const spyIndexes = getSpyIndexes(playerCount, spyNum);
+			const spyWord = set[0];
+			const normalWord = set[1];
+			const words = Array(playerCount).fill().map((_, i) => spyIndexes.includes(i) ? spyWord : normalWord);
 
             cards = words.map((word, index) => {
                 const card = document.createElement('div');
@@ -403,27 +430,33 @@ button, input {
                         }, 500);
 
                     } else {
-                        const execDiv = document.getElementById(`execResult${index}`);
-                        if (execDiv.textContent !== '') return;
+					    const execDiv = document.getElementById(`execResult${index}`);
+						if (execDiv.textContent !== '') return;
 
-                        if (index === realSpyIndex) {
-                            execDiv.textContent = i18n[currentLang].spy;
-                            execDiv.className = 'execution-result success';
-							document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
-                        } else {
-                            execDiv.textContent = i18n[currentLang].notSpy;
-                            execDiv.className = 'execution-result fail';
-                        }
+						if (spyIndexes.includes(index)) {
+							execDiv.textContent = i18n[currentLang].spy;
+							execDiv.className = 'execution-result success';
 
-                        const frontImgDiv = card.querySelector('.front .img-container');
-                        const frontTextDiv = card.querySelector('.front .text-container');
+							foundSpiesCount++;  // 找出一個間諜
 
-                        if (frontImgDiv) frontImgDiv.style.display = 'none';
-                        if (frontTextDiv) frontTextDiv.textContent = '';
+							// 當找到全部間諜才顯示訊息
+							if (foundSpiesCount === spyIndexes.length) {
+								document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
+							}
+						} else {
+							execDiv.textContent = i18n[currentLang].notSpy;
+							execDiv.className = 'execution-result fail';
+						}
 
-                        if (!card.classList.contains('flipped')) {
-                            card.classList.add('flipped');
-                        }
+						const frontImgDiv = card.querySelector('.front .img-container');
+						const frontTextDiv = card.querySelector('.front .text-container');
+
+						if (frontImgDiv) frontImgDiv.style.display = 'none';
+						if (frontTextDiv) frontTextDiv.textContent = '';
+
+						if (!card.classList.contains('flipped')) {
+							card.classList.add('flipped');
+						}
                     }
                 });
 
@@ -433,7 +466,7 @@ button, input {
             console.log("DEBUG 平民是：", normalWord.text);
             console.log("DEBUG 間諜是：", realSpyIndex + 1, spyWord.text);
         }
-
+		
         restartBtn.onclick = () => {
             game.innerHTML = '';
             executionResult.textContent = '';
