@@ -6,370 +6,484 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spy Game</title>
     <style>
-body {
-    font-family: sans-serif;
-    background: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* ✅ 要從上往下排 */
-    min-height: 100vh;
-    margin: 0;
-    padding: 80px 10px 10px;  /* ✅ 這行是重點！ */
-    box-sizing: border-box;
-}
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e1e1e;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 80px 10px 10px;
+            box-sizing: border-box;
+        }
 
-/* 卡片容器：使用 CSS Grid 自動排版 */
-#game {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px;
-    justify-content: center;
-    width: 100%;
-    max-width: 1000px;
-}
+        #logo {
+            text-align: center;
+            margin-bottom: 15px;
+            transition: opacity 0.8s ease;
+        }
 
-/* 卡片本體：自動保持 2:3 比例 */
-.card {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    max-width: 200px;
-    perspective: 1000px;
-    cursor: pointer;
-    position: relative;
-    margin: auto;
-    margin-bottom: 30px;
-}
+        #logo.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
 
-.card, .card * {
-    user-select: none;
-}
+        #logo span {
+            display: block;
+            font-size: 72px;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
 
-/* 卡片翻轉效果 */
-.inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.8s;
-}
+        #logo h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
 
-.flipped .inner {
-    transform: rotateY(180deg);
-}
+        #game {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1000px;
+        }
 
-.face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    backface-visibility: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    text-align: center;
-    padding: 10px;
-    box-sizing: border-box;
-    flex-direction: column;
-}
+        /* ====== 這裡是重點調整 ====== */
+        .card {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 150%;
+            /* 2:3 高寬比 */
+            perspective: 1000px;
+            cursor: pointer;
+            user-select: none;
+        }
 
-.back {
-    background: #4e73df;
-    color: white;
-}
+        .inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
 
-.front {
-    background: white;
-    color: #333;
-    transform: rotateY(180deg);
-    position: relative;
-}
+        .flipped .inner {
+            transform: rotateY(180deg);
+        }
 
-/* 卡片上方的玩家名稱 */
-.player-label {
-    position: absolute;
-    top: -20px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-}
+        .face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-/* 翻牌後的執行結果訊息 */
-.execution-result {
-	margin-top: 10px;
-    font-size: 16px;
-    font-weight: bold;
-}
-.execution-result.success {
-    color: #388e3c;
-}
-.execution-result.fail {
-    color: #d32f2f;
-}
+        .back {
+            background: linear-gradient(145deg, #3a3a3a, #2b2b2b);
+            color: #f5f5f5;
+            font-weight: bold;
+            letter-spacing: 1px;
+            position: relative;
+        }
 
-/* 輸入與按鈕樣式 */
-button, input {
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 16px;
-}
+        .back::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: rotate(25deg) translateX(-100%);
+            pointer-events: none;
+        }
 
-#startBtn,
+        .card.flipped .back::after {
+            animation: shine 0.8s forwards;
+        }
 
-#doneFlipBtn,
-#confirmNamesBtn {
-    background-color: #2e59d9;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-#startBtn:hover,
-#restartBtn:hover,
-#doneFlipBtn:hover,
-#confirmNamesBtn:hover {
-    background-color: #224abe;
-}
+        @keyframes shine {
+            0% {
+                transform: rotate(25deg) translateX(-100%);
+            }
 
-#doneFlipBtn {
-    margin-top: 10px;
-}
+            100% {
+                transform: rotate(25deg) translateX(200%);
+            }
+        }
 
-/* 名字輸入欄 */
-#nameInputContainer input {
-    display: block;
-    margin-bottom: 8px;
-    width: 200px;
-    font-size: 16px;
-    padding: 6px 8px;
-}
+        .front {
+            background: #ffffff;
+            color: #333;
+            transform: rotateY(180deg);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
 
-/* 提示訊息 */
-#message {
-    color: #A52A2A;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    display: none;
-}
+        .player-label {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: #aaa;
+        }
 
-/* 重新遊戲按鈕 */
-#restartBtn {
-    position: fixed;
-    top: 10px;
-    right: 60px;
-    padding: 6px 10px;
-	    height: 32px;
-    font-size: 14px;
-    background: #2e59d9;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
+        .execution-result {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
 
-/* 語言切換按鈕 */
-#langToggle {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    padding: 6px 10px;
-		    height: 32px;
-    font-size: 14px;
-    background: #2e59d9;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
+        .execution-result.success {
+            color: #4caf50;
+        }
 
+        .execution-result.fail {
+            color: #f44336;
+        }
 
-/* 👉 手機橫向時強制一行顯示 4 張卡片 */
-@media (max-width: 800px) and (orientation: landscape) {
-    #game {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
+        button,
+        input {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
 
+        .start-inputs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #nameInputContainer input {
+            display: block;
+            margin-bottom: 8px;
+            width: 200px;
+            font-size: 16px;
+            padding: 6px 8px;
+        }
+
+        input {
+            background: #2c2c2c;
+            color: #f0f0f0;
+            border: 1px solid #444;
+        }
+
+        input::placeholder {
+            color: #bbb;
+        }
+
+        #startBtn,
+        #doneFlipBtn,
+        #confirmNamesBtn,
+        #restartBtn,
+        #whiteCardBtn,
+        #topButtons button {
+            background: #2e59d9;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        #startBtn:hover,
+        #doneFlipBtn:hover,
+        #confirmNamesBtn:hover,
+        #restartBtn:hover,
+        #whiteCardBtn:hover,
+        #topButtons button:hover {
+            background: #4a75f0;
+            transform: scale(1.05);
+        }
+
+        #message {
+            color: #d4af37;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        #topButtons {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        @media (max-width: 800px) and (orientation: landscape) {
+            #game {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
     </style>
 </head>
 
 <body>
-    <button id="restartBtn" style="display:none;">重新遊戲</button>
-    <button id="langToggle">EN</button>
-
-    <div id="start">
-		<input id="playerCount" type="number" min="2" placeholder="玩家人數" value="3" /><br/>
-		<input id="spyCount" type="number" min="1" placeholder="間諜人數" value="1" /><br/>
-        <button id="startBtn">開始遊戲</button><br/>
-
-        <div id="nameInputContainer" style="margin-top: 10px;"></div>
-        <button id="confirmNamesBtn" style="display:none;">確定名字</button>
+    <div id="topButtons">
+        <button id="restartBtn" style="display:none;">重新遊戲</button>
+        <button id="whiteCardBtn" style="display:none;">放入白卡</button>
+        <button id="langToggle">EN</button>
     </div>
-
+	<div id="logo">
+        <span>🕵️</span>
+        <h1 id="logoTitle">間諜遊戲</h1>
+    </div>
+    <div id="start">
+        <div class="start-inputs">
+            <input id="playerCount" type="number" min="2" placeholder="玩家人數" />
+            <input id="spyCount" type="number" min="1" placeholder="間諜人數" />
+            <button id="startBtn">開始遊戲</button>
+            <div id="nameInputContainer" style="margin-top: 10px;"></div>
+            <button id="confirmNamesBtn" style="display:none;">確定名字</button>
+        </div>
+    </div>
     <div id="message"></div>
-
     <div id="game"></div>
     <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
-
     <div id="executionResult"></div>
-
 
     <script src="config.js"></script>
     <script>
+        // === 全域變數區 ===
         const langToggle = document.getElementById('langToggle');
-        let currentLang = 'zh';
+        const startBtn = document.getElementById('startBtn');
+        const confirmNamesBtn = document.getElementById('confirmNamesBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const whiteCardBtn = document.getElementById('whiteCardBtn');
+        const doneFlipBtn = document.getElementById('doneFlipBtn');
+        const game = document.getElementById('game');
+        const executionResult = document.getElementById('executionResult');
+        const nameInputContainer = document.getElementById('nameInputContainer');
+        const messageDiv = document.getElementById('message');
 
+        let currentLang = 'zh';
+        let flippedState = [];
+        let realSpyIndex = -1;
+        let cards = [];
+        let executing = false;
+        let lock = false;
+        let playerCount = 0;
+        let playerNames = [];
+        let foundSpiesCount = 0;
+        let whiteCardUsed = false;
+        let spyIndexes = [];
+
+        // === 語言包 ===
         const i18n = {
             zh: {
                 title: "誰是間諜",
                 start: "開始遊戲",
                 confirm: "確定名字",
                 restart: "重新遊戲",
+                whiteCard: "放入白卡",
                 done: "大家都翻完牌了！",
                 inputName: i => `輸入第 ${i} 位玩家名字`,
                 alert: "請輸入 3 位以上玩家",
-				alert2: "間諜人數須小於玩家",
+                alert2: "間諜人數須小於玩家",
                 missingName: i => `請輸入第 ${i} 位玩家名字`,
-				flip: "請翻牌！",
+                flip: "請翻牌！",
                 execute: "大家來處決！",
                 spy: "✅ 是間諜🕵️！",
                 notSpy: "❌ 不是間諜。",
                 placeholderCount: "玩家人數",
-				spyCountPlaceholder: "間諜人數",
-                flipMe: "點我翻牌",
+                spyCountPlaceholder: "間諜人數 (預設1)",
+                flipMe: "點我翻牌"
             },
             en: {
                 title: "Spy Game",
                 start: "Start Game",
                 confirm: "Confirm Names",
                 restart: "Restart",
+                whiteCard: "WhiteCard",
                 done: "Everyone flipped!",
                 inputName: i => `Enter name for Player ${i}`,
                 alert: "Please enter at least 3 players",
-				alert2: "Spies can't exceed players",
+                alert2: "Spies can't exceed players",
                 missingName: i => `Please enter name for Player ${i}`,
                 flip: "Flip in turn!",
-				execute: "Time to execute!",
+                execute: "Time to execute!",
                 spy: "✅ Is the spy🕵️!",
                 notSpy: "❌ Not the spy.",
-                placeholderCount: "Number of Players",
-				spyCountPlaceholder: "Number of Spies",
-                flipMe: "Tap to flip",
+                placeholderCount: "Players",
+                spyCountPlaceholder: "Spies (Default 1)",
+                flipMe: "Tap to flip"
             }
         };
 
+        // === 事件監聽區 ===
         langToggle.onclick = () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             langToggle.textContent = currentLang === 'zh' ? 'EN' : '中';
             updateText();
         };
 
+        startBtn.onclick = () => {
+            const num = parseInt(document.getElementById('playerCount').value);
+            if (!num || num < 3) return alert(i18n[currentLang].alert);
+            const spyNum = parseInt(document.getElementById('spyCount').value) || 1;
+            if (!spyNum || spyNum < 1 || spyNum >= num) return alert(i18n[currentLang].alert2);
+            window.spyNum = spyNum;
+            playerCount = num;
+            nameInputContainer.innerHTML = '';
+            messageDiv.style.display = 'none';
+            for (let i = 1; i <= playerCount; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = i18n[currentLang].inputName(i);
+                input.id = `playerName${i}`;
+                nameInputContainer.appendChild(input);
+            }
+            confirmNamesBtn.textContent = i18n[currentLang].confirm;
+            confirmNamesBtn.style.display = 'inline-block';
+            startBtn.style.display = 'none';
+			document.getElementById('logo').style.display = 'none';
+            document.getElementById('playerCount').style.display = 'none';
+            document.getElementById('spyCount').style.display = 'none';
+        };
+
+        confirmNamesBtn.onclick = () => {
+            playerNames = [];
+            for (let i = 1; i <= playerCount; i++) {
+                const val = document.getElementById(`playerName${i}`).value.trim();
+                playerNames.push(val || `${Math.floor(1 + Math.random() * 99)}`);
+            }
+            messageDiv.style.display = 'block';
+            messageDiv.textContent = i18n[currentLang].flip;
+            confirmNamesBtn.style.display = 'none';
+            initGame(playerCount, playerNames);
+        };
+
+        doneFlipBtn.onclick = () => {
+            executing = true;
+            messageDiv.textContent = i18n[currentLang].execute;
+            messageDiv.style.display = 'block';
+            doneFlipBtn.style.display = 'none';
+            executionResult.textContent = '';
+            executionResult.className = '';
+        };
+
+        whiteCardBtn.onclick = () => {
+            if (whiteCardUsed) return;
+
+            // 找出平民的 index（不是間諜的）
+            const set = sets[Math.floor(Math.random() * sets.length)];
+            const spyNum = window.spyNum || 1;
+            while (spyIndexes.size < spyNum) {
+                spyIndexes.add(Math.floor(Math.random() * playerCount));
+            }
+
+            const whiteCandidates = cards.map((_, i) => i).filter(i => !spyIndexes.includes(i));
+
+            if (whiteCandidates.length === 0) return;
+
+            // 隨機選一個平民設為白卡
+            const whiteIndex = whiteCandidates[Math.floor(Math.random() * whiteCandidates.length)];
+            const card = cards[whiteIndex];
+
+            // 移除圖片與文字
+            const frontImgDiv = card.querySelector('.front .img-container');
+            const frontTextDiv = card.querySelector('.front .text-container');
+            if (frontImgDiv) frontImgDiv.remove();
+            if (frontTextDiv) frontTextDiv.textContent = '';
+
+            // 標記為白卡（處決時不顯示內容）
+            card.dataset.isWhite = "true";
+
+            // 停用按鈕
+            whiteCardUsed = true;
+            whiteCardBtn.disabled = true; // 禁用按鈕
+            whiteCardBtn.style.background = '#A52A2A'; // 變紅色
+            whiteCardBtn.style.cursor = 'not-allowed'; // 滑鼠變禁止狀態
+        };
+
+
+        restartBtn.onclick = () => {
+            game.innerHTML = '';
+            executionResult.textContent = '';
+            executionResult.className = '';
+            doneFlipBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block';
+            messageDiv.textContent = i18n[currentLang].flip;
+            messageDiv.style.display = 'block';
+            executing = false;
+            flippedState = Array(playerCount).fill(0);
+            whiteCardBtn.style.display = 'none';
+            whiteCardUsed = false;
+            whiteCardBtn.disabled = false;
+            whiteCardBtn.style.background = '#2e59d9';
+            whiteCardBtn.style.cursor = 'pointer';
+            initGame(playerCount, playerNames);
+
+        };
+
+        // === function 類 ===
         function updateText() {
             document.title = i18n[currentLang].title;
+			 document.getElementById('logoTitle').textContent = i18n[currentLang].title;
             document.getElementById('startBtn').textContent = i18n[currentLang].start;
             document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirm;
             document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
+            document.getElementById('whiteCardBtn').textContent = i18n[currentLang].whiteCard;
             document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
             document.getElementById('playerCount').placeholder = i18n[currentLang].placeholderCount;
-			document.getElementById('spyCount').placeholder = i18n[currentLang].spyCountPlaceholder;
-			
+            document.getElementById('spyCount').placeholder = i18n[currentLang].spyCountPlaceholder;
             const inputs = document.querySelectorAll('#nameInputContainer input');
             inputs.forEach((input, i) => {
                 input.placeholder = i18n[currentLang].inputName(i + 1);
             });
         }
 
-        // 其他遊戲程式碼不變，僅將所有硬編碼文字改為 i18n[currentLang].xxx 的方式使用即可。
-
-        // 請繼續將其他文字如 alert、訊息顯示等用 i18n[currentLang] 對應替換即可。
-        // 使用 window.sets
-        console.log(window.sets);
-
-        const startBtn = document.getElementById('startBtn');
-        const confirmNamesBtn = document.getElementById('confirmNamesBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const game = document.getElementById('game');
-        const executionResult = document.getElementById('executionResult');
-        const doneFlipBtn = document.getElementById('doneFlipBtn');
-        const nameInputContainer = document.getElementById('nameInputContainer');
-        const messageDiv = document.getElementById('message');
-
-        let flippedState = [];
-        let realSpyIndex = -1;
-        let cards = [];
-        let executing = false; // 是否可執行處決
-        let lock = false; // 點擊鎖定3秒防止太快點
-        let playerCount = 0;
-        let playerNames = [];
-		let foundSpiesCount = 0;
-
-
-        startBtn.onclick = () => {
-			const num = parseInt(document.getElementById('playerCount').value);
-			if (!num || num < 3) {
-				alert(i18n[currentLang].alert);
-				return;
-			}
-			
-			const spyNum = parseInt(document.getElementById('spyCount').value);
-			if (!spyNum || spyNum < 1 || spyNum >= num) {
-				alert(i18n[currentLang].alert2);
-				return;
-			}
-
-			window.spyNum = spyNum;  // 這行一定要加！
-
-			playerCount = num;
-			nameInputContainer.innerHTML = '';
-			messageDiv.style.display = 'none';
-			for (let i = 1; i <= playerCount; i++) {
-				const input = document.createElement('input');
-				input.type = 'text';
-				input.placeholder = i18n[currentLang].inputName(i);
-				input.id = `playerName${i}`;
-				nameInputContainer.appendChild(input);
-			}
-			confirmNamesBtn.textContent = i18n[currentLang].confirm;
-			confirmNamesBtn.style.display = 'inline-block';
-			startBtn.style.display = 'none';
-			document.getElementById('playerCount').style.display = 'none';
-			document.getElementById('spyCount').style.display = 'none';
-		};
-
-        confirmNamesBtn.onclick = () => {
-            playerNames = [];
-			for (let i = 1; i <= playerCount; i++) {
-				const val = document.getElementById(`playerName${i}`).value.trim();
-				if (!val) {
-					const randomNum = Math.floor(1 + Math.random() * 99); // 1~99（含1不含100）
-					playerNames.push(`${randomNum}`);
-				} else {
-					playerNames.push(val);
-				}
-			}
-            messageDiv.style.display = 'block';
-			messageDiv.textContent = i18n[currentLang].flip;
-            confirmNamesBtn.style.display = 'none';
-
-            initGame(playerCount, playerNames);
-        };
-
         function checkAllFlipped() {
             const allFlipped = flippedState.every(count => count >= 2);
             doneFlipBtn.style.display = allFlipped ? 'inline-block' : 'none';
         }
 
-		function getSpyIndexes(totalPlayers, spyNum) {
-			const indexes = new Set();
-			while (indexes.size < spyNum) {
-				indexes.add(Math.floor(Math.random() * totalPlayers));
-			}
-			return Array.from(indexes);
-		}
+        function getSpyIndexes(totalPlayers, spyNum) {
+            const indexes = new Set();
+            while (indexes.size < spyNum) {
+                indexes.add(Math.floor(Math.random() * totalPlayers));
+            }
+            return Array.from(indexes);
+        }
 
         function initGame(playerCount, playerNames) {
             document.getElementById('start').style.display = 'none';
@@ -379,117 +493,100 @@ button, input {
             executionResult.className = '';
             restartBtn.style.display = 'inline-block';
             doneFlipBtn.style.display = 'none';
+            whiteCardBtn.style.display = 'inline-block';
+            whiteCardBtn.style.background = '#2e59d9';
+            whiteCardBtn.disabled = false;
             flippedState = Array(playerCount).fill(0);
             executing = false;
-			foundSpiesCount = 0;
-
+            foundSpiesCount = 0;
             const set = sets[Math.floor(Math.random() * sets.length)];
             const spyNum = window.spyNum || 1;
-			const spyIndexes = getSpyIndexes(playerCount, spyNum);
-			const spyWord = set[0];
-			const normalWord = set[1];
-			const words = Array(playerCount).fill().map((_, i) => spyIndexes.includes(i) ? spyWord : normalWord);
+            spyIndexes = getSpyIndexes(playerCount, spyNum);
+            const spyWord = set[0];
+            const normalWord = set[1];
+            const words = Array(playerCount).fill().map((_, i) => spyIndexes.includes(i) ? spyWord : normalWord);
 
             cards = words.map((word, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-      <div class="player-label">${playerNames[index]}</div>
-      <div class="inner">
-        <div class="face back">${i18n[currentLang].flipMe}</div>
-        <div class="face front">
-          <div class="img-container">
-            <img src="${word.img}" style="max-width: 100%; height: auto;" />
-          </div>
-          <div class="text-container">${word.text}</div>
-          <div class="execution-result" id="execResult${index}"></div>
-        </div>
-      </div>`;
+				<div class="player-label">${playerNames[index]}</div>
+				<div class="inner">
+					<div class="face back">${i18n[currentLang].flipMe}</div>
+					<div class="face front">
+						<div class="img-container"><img src="${word.img}" style="max-width: 100%; height: auto;" /></div>
+						<div class="text-container">${word.text}</div>
+						<div class="execution-result" id="execResult${index}"></div>
+					</div>
+				</div>`;
 
                 let localLock = false;
-
                 card.addEventListener('click', () => {
                     if (lock || localLock) return;
+
+                    if (!whiteCardUsed) {
+                        whiteCardUsed = true;
+                        whiteCardBtn.disabled = true;
+                        whiteCardBtn.style.background = 'gray';
+                        whiteCardBtn.style.cursor = 'not-allowed';
+                    }
+
                     if (!executing) {
                         if (flippedState[index] >= 2) return;
                         const someOtherFlipped = flippedState.some((count, i) => i !== index && (count % 2 === 1));
                         if (someOtherFlipped) return;
-
                         card.classList.toggle('flipped');
                         flippedState[index]++;
                         checkAllFlipped();
-
                         executionResult.textContent = '';
                         executionResult.className = '';
-
                         lock = true;
                         localLock = true;
                         setTimeout(() => {
                             lock = false;
                             localLock = false;
                         }, 500);
-
                     } else {
-					    const execDiv = document.getElementById(`execResult${index}`);
-						if (execDiv.textContent !== '') return;
+                        const execDiv = document.getElementById(`execResult${index}`);
 
-						if (spyIndexes.includes(index)) {
-							execDiv.textContent = i18n[currentLang].spy;
-							execDiv.className = 'execution-result success';
+                        if (execDiv.textContent !== '') {
+                            return;
+                        }
 
-							foundSpiesCount++;  // 找出一個間諜
 
-							// 當找到全部間諜才顯示訊息
-							if (foundSpiesCount === spyIndexes.length) {
-								document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
-							}
-						} else {
-							execDiv.textContent = i18n[currentLang].notSpy;
-							execDiv.className = 'execution-result fail';
-						}
+                        const frontImgDiv = card.querySelector('.front .img-container');
+                        const frontTextDiv = card.querySelector('.front .text-container');
+                        if (frontImgDiv) frontImgDiv.style.display = 'none';
+                        if (frontTextDiv) frontTextDiv.textContent = '';
+                        if (!card.classList.contains('flipped')) {
+                            card.classList.add('flipped');
+                        }
 
-						const frontImgDiv = card.querySelector('.front .img-container');
-						const frontTextDiv = card.querySelector('.front .text-container');
+                        if (card.dataset.isWhite === "true") {
+                            execDiv.textContent = '';
+                            execDiv.className = '';
+                            return;
+                        }
 
-						if (frontImgDiv) frontImgDiv.style.display = 'none';
-						if (frontTextDiv) frontTextDiv.textContent = '';
-
-						if (!card.classList.contains('flipped')) {
-							card.classList.add('flipped');
-						}
+                        if (spyIndexes.includes(index)) {
+                            execDiv.textContent = i18n[currentLang].spy;
+                            execDiv.className = 'execution-result success';
+                            foundSpiesCount++;
+                            if (foundSpiesCount === spyIndexes.length) {
+                                document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
+                            }
+                        } else {
+                            execDiv.textContent = i18n[currentLang].notSpy;
+                            execDiv.className = 'execution-result fail';
+                        }
                     }
                 });
-
                 game.appendChild(card);
                 return card;
             });
             console.log("DEBUG 平民是：", normalWord.text);
             console.log("DEBUG 間諜是：", realSpyIndex + 1, spyWord.text);
         }
-		
-        restartBtn.onclick = () => {
-            game.innerHTML = '';
-            executionResult.textContent = '';
-            executionResult.className = '';
-            doneFlipBtn.style.display = 'none';
-            restartBtn.style.display = 'inline-block';
-			document.getElementById('message').textContent = i18n[currentLang].flip;
-            document.getElementById('message').style.display = 'block';
-            executing = false;
-            flippedState = Array(playerCount).fill(0);
-
-            initGame(playerCount, playerNames);
-        };
-
-        doneFlipBtn.onclick = () => {
-            executing = true;
-            document.getElementById('message').textContent = i18n[currentLang].execute;
-            document.getElementById('message').style.display = 'block';
-            doneFlipBtn.style.display = 'none';
-            restartBtn.style.display = 'inline-block';
-            executionResult.textContent = '';
-            executionResult.className = '';
-        };
     </script>
 </body>
 
