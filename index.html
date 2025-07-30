@@ -66,7 +66,7 @@
             perspective: 1000px;
             cursor: pointer;
             user-select: none;
-			margin-bottom:10px
+            margin-bottom: 10px
         }
 
         .inner {
@@ -126,17 +126,17 @@
             pointer-events: none;
         }
 
- 
+
 
 
         .card.flipped .back::after {
             animation: shine 0.8s forwards;
         }
 
-		.card.viewed .back {
-		  color: #777777;
-		}
-		
+        .card.viewed .back {
+            color: #777777;
+        }
+
         @keyframes shine {
             0% {
                 transform: rotate(25deg) translateX(-100%);
@@ -258,6 +258,17 @@
             z-index: 10;
         }
 
+        table {
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #999;
+            padding: 6px 12px;
+            text-align: center;
+        }
+
         @media (max-width: 800px) and (orientation: landscape) {
             #game {
                 grid-template-columns: repeat(4, 1fr);
@@ -271,15 +282,16 @@
         <button id="restartBtn" style="display:none;">重新遊戲</button>
         <button id="whiteCardBtn" style="display:none;">放入白卡</button>
         <button id="langToggle">EN</button>
+        <button id="ruleToggle">R</button>
     </div>
-	<div id="logo">
+    <div id="logo">
         <span>🕵️</span>
         <h1 id="logoTitle">間諜遊戲</h1>
     </div>
     <div id="start">
         <div class="start-inputs">
             <input id="playerCount" type="number" min="2" placeholder="玩家人數" />
-            <input id="spyCount" type="number" min="1" placeholder="間諜人數" />
+            <input id="spyCount" type="number" min="1" placeholder="間諜人數 (預設1)" />
             <button id="startBtn">開始遊戲</button>
             <div id="nameInputContainer" style="margin-top: 10px;"></div>
             <button id="confirmNamesBtn" style="display:none;">確定名字</button>
@@ -289,6 +301,61 @@
     <div id="game"></div>
     <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
     <div id="executionResult"></div>
+
+    <div id="ruleBox" style="display:none; position: fixed; top: 60px; right: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 12px; z-index: 999; max-width: 300px; font-size: 14px;">
+        <div id="rule" style="font-weight: bold; margin-bottom: 6px;">規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝</div>
+        <table border="1" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th id="colPlayer">玩家</th>
+                    <th id="colSpy">間諜</th>
+                    <th id="colMissKill">誤殺</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>1</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>1</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>2</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>2</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>2</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <script src="config.js"></script>
     <script>
@@ -335,7 +402,11 @@
                 notSpy: "❌ 不是間諜。",
                 placeholderCount: "玩家人數",
                 spyCountPlaceholder: "間諜人數 (預設1)",
-                flipMe: "點我翻牌"
+                flipMe: "點我翻牌",
+                rule: "規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝",
+                colPlayer: "玩家",
+                colSpy: "間諜",
+                colMissKill: "誤殺"
             },
             en: {
                 title: "Spy Game",
@@ -354,8 +425,20 @@
                 notSpy: "❌ Not the spy.",
                 placeholderCount: "Players",
                 spyCountPlaceholder: "Spies (Default 1)",
-                flipMe: "Tap to flip"
+                flipMe: "Tap to flip",
+                rule: "Rules for reference only: Find all spies, civilians win. Reach miss kills, spies win.",
+                colPlayer: "Players",
+                colSpy: "Spies",
+                colMissKill: "Miss"
             }
+        };
+
+        // === 規則顯示 ===
+        const ruleToggle = document.getElementById('ruleToggle');
+        const ruleBox = document.getElementById('ruleBox');
+
+        ruleToggle.onclick = () => {
+            ruleBox.style.display = ruleBox.style.display === 'none' ? 'block' : 'none';
         };
 
         // === 事件監聽區 ===
@@ -384,7 +467,7 @@
             confirmNamesBtn.textContent = i18n[currentLang].confirm;
             confirmNamesBtn.style.display = 'inline-block';
             startBtn.style.display = 'none';
-			document.getElementById('logo').style.display = 'none';
+            document.getElementById('logo').style.display = 'none';
             document.getElementById('playerCount').style.display = 'none';
             document.getElementById('spyCount').style.display = 'none';
         };
@@ -467,7 +550,7 @@
         // === function 類 ===
         function updateText() {
             document.title = i18n[currentLang].title;
-			 document.getElementById('logoTitle').textContent = i18n[currentLang].title;
+            document.getElementById('logoTitle').textContent = i18n[currentLang].title;
             document.getElementById('startBtn').textContent = i18n[currentLang].start;
             document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirm;
             document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
@@ -475,6 +558,11 @@
             document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
             document.getElementById('playerCount').placeholder = i18n[currentLang].placeholderCount;
             document.getElementById('spyCount').placeholder = i18n[currentLang].spyCountPlaceholder;
+            document.getElementById('rule').textContent = i18n[currentLang].rule;
+            document.getElementById('colPlayer').textContent = i18n[currentLang].colPlayer;
+            document.getElementById('colSpy').textContent = i18n[currentLang].colSpy;
+            document.getElementById('colMissKill').textContent = i18n[currentLang].colPlayer;
+
             const inputs = document.querySelectorAll('#nameInputContainer input');
             inputs.forEach((input, i) => {
                 input.placeholder = i18n[currentLang].inputName(i + 1);
@@ -545,7 +633,7 @@
                         const someOtherFlipped = flippedState.some((count, i) => i !== index && (count % 2 === 1));
                         if (someOtherFlipped) return;
                         card.classList.toggle('flipped');
-						card.classList.add('viewed');
+                        card.classList.add('viewed');
                         flippedState[index]++;
                         checkAllFlipped();
                         executionResult.textContent = '';
