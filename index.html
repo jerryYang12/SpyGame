@@ -112,6 +112,7 @@
             position: relative;
         }
 
+
         .back::after {
             content: "";
             position: absolute;
@@ -124,10 +125,17 @@
             pointer-events: none;
         }
 
+ 
+
+
         .card.flipped .back::after {
             animation: shine 0.8s forwards;
         }
 
+		.card.viewed .back {
+		  color: #777777;
+		}
+		
         @keyframes shine {
             0% {
                 transform: rotate(25deg) translateX(-100%);
@@ -536,6 +544,7 @@
                         const someOtherFlipped = flippedState.some((count, i) => i !== index && (count % 2 === 1));
                         if (someOtherFlipped) return;
                         card.classList.toggle('flipped');
+						card.classList.add('viewed');
                         flippedState[index]++;
                         checkAllFlipped();
                         executionResult.textContent = '';
