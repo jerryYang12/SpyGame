@@ -76,8 +76,12 @@ window.sets = [
 [ { text: "溫泉 Hot Spring", img: "" }, { text: "火鍋 Hot Pot", img: "" } ],
 [ { text: "聖誕節 Christmas", img: "" }, { text: "過年 Lunar New Year", img: "" } ],
 [
-{ text: "糖葫蘆 Candied Haw", img: "https://jerryyang12.github.io/SpyGame/pic/Candied.jpg" },
-{ text: "布丁 Pudding", img: "https://jerryyang12.github.io/SpyGame/pic/pudding.jpg" }
+{ text: "糖葫蘆 Candied Haw", img: "https://jerryyang12.github.io/SpyGame/pic/candied.png" },
+{ text: "布丁 Pudding", img: "https://jerryyang12.github.io/SpyGame/pic/pudding.png" }
+],
+[
+{ text: "布丁貓 Pudding Cat", img: "https://jerryyang12.github.io/SpyGame/pic/cat.png" },
+{ text: "熊貓珍奶 Panda Boba", img: "https://jerryyang12.github.io/SpyGame/pic/panda.png" }
 ],
 [
 { text: "蟑螂 Cockroach", img: "https://stickershop.line-scdn.net/stickershop/v1/product/24129127/LINEStorePC/main.png?v=2" },
