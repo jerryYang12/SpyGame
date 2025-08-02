@@ -56,25 +56,20 @@
             max-width: 1000px;
         }
 
-        /* ====== 這裡是重點調整 ====== */
         .card {
             position: relative;
             width: 100%;
             height: 0;
             padding-bottom: 150%;
-            /* 2:3 高寬比 */
             perspective: 1000px;
             cursor: pointer;
             user-select: none;
-            margin-bottom: 10px
+            margin-bottom: 10px;
         }
 
         .inner {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
@@ -85,14 +80,15 @@
             transform: rotateY(180deg);
         }
 
-        .face {
+        .face,
+        .front,
+        .back {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             border-radius: 12px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
             backface-visibility: hidden;
             display: flex;
             align-items: center;
@@ -110,9 +106,7 @@
             color: #f5f5f5;
             font-weight: bold;
             letter-spacing: 1px;
-            position: relative;
         }
-
 
         .back::after {
             content: "";
@@ -126,15 +120,12 @@
             pointer-events: none;
         }
 
-
-
-
         .card.flipped .back::after {
             animation: shine 0.8s forwards;
         }
 
         .card.viewed .back {
-            color: #777777;
+            color: #777;
         }
 
         @keyframes shine {
@@ -148,15 +139,9 @@
         }
 
         .front {
-            background: #ffffff;
+            background: #fff;
             color: #333;
             transform: rotateY(180deg);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
         }
 
         .player-label {
@@ -382,57 +367,7 @@
         let foundSpiesCount = 0;
         let whiteCardUsed = false;
         let spyIndexes = [];
-
-        // === 語言包 ===
-        const i18n = {
-            zh: {
-                title: "誰是間諜",
-                start: "開始遊戲",
-                confirm: "確定名字",
-                restart: "重新遊戲",
-                whiteCard: "放入白卡",
-                done: "大家都翻完牌了！",
-                inputName: i => `輸入第 ${i} 位玩家名字`,
-                alert: "請輸入 3 位以上玩家",
-                alert2: "間諜人數須小於玩家",
-                missingName: i => `請輸入第 ${i} 位玩家名字`,
-                flip: "請翻牌！",
-                execute: "大家來處決！",
-                spy: "✅ 是間諜🕵️！",
-                notSpy: "❌ 不是間諜。",
-                placeholderCount: "玩家人數",
-                spyCountPlaceholder: "間諜人數 (預設1)",
-                flipMe: "點我翻牌",
-                rule: "規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝",
-                colPlayer: "玩家",
-                colSpy: "間諜",
-                colMissKill: "誤殺"
-            },
-            en: {
-                title: "Spy Game",
-                start: "Start Game",
-                confirm: "Confirm Names",
-                restart: "Restart",
-                whiteCard: "WhiteCard",
-                done: "Everyone flipped!",
-                inputName: i => `Enter name for Player ${i}`,
-                alert: "Please enter at least 3 players",
-                alert2: "Spies can't exceed players",
-                missingName: i => `Please enter name for Player ${i}`,
-                flip: "Flip in turn!",
-                execute: "Time to execute!",
-                spy: "✅ Is the spy🕵️!",
-                notSpy: "❌ Not the spy.",
-                placeholderCount: "Players",
-                spyCountPlaceholder: "Spies (Default 1)",
-                flipMe: "Tap to flip",
-                rule: "Rules for reference only: Find all spies, civilians win. Reach miss kills, spies win.",
-                colPlayer: "Players",
-                colSpy: "Spies",
-                colMissKill: "Miss Kills"
-            }
-        };
-
+ 
         // === 規則顯示 ===
         const ruleToggle = document.getElementById('ruleToggle');
         const ruleBox = document.getElementById('ruleBox');
