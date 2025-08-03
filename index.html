@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spy Game v25</title>
+    <title>Spy Game v26</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -208,6 +208,7 @@
         #confirmNamesBtn,
         #restartBtn,
         #whiteCardBtn,
+        #addSetBtn,
         #topButtons button {
             background: #2e59d9;
             color: #fff;
@@ -221,6 +222,7 @@
         #confirmNamesBtn:hover,
         #restartBtn:hover,
         #whiteCardBtn:hover,
+        #addSetBtn,
         #topButtons button:hover {
             background: #4a75f0;
             transform: scale(1.05);
@@ -254,6 +256,45 @@
             text-align: center;
         }
 
+        #topicDialog {
+            padding: 1em;
+            border: none;
+            border-radius: 8px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+
+        input {
+            padding: 0.5em;
+            font-size: 1em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5em;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 0.5em;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-group button[type="submit"] {
+            background: #2e59d9;
+            color: #fff;
+        }
+
+        .btn-group button[type="reset"] {
+            background: #ccc;
+            color: #333;
+        }
+
         @media (max-width: 800px) and (orientation: landscape) {
             #game {
                 grid-template-columns: repeat(4, 1fr);
@@ -265,9 +306,11 @@
 <body>
     <div id="topButtons">
         <button id="restartBtn" style="display:none;">重新遊戲</button>
+        <button id="addSetBtn" style="display:none;">+</button>
         <button id="whiteCardBtn" style="display:none;">放入白卡</button>
         <button id="langToggle">EN</button>
         <button id="ruleToggle">R</button>
+
     </div>
     <div id="logo">
         <span>🕵️</span>
@@ -286,6 +329,17 @@
     <div id="game"></div>
     <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
     <div id="executionResult"></div>
+
+    <dialog id="topicDialog" class="clean-dialog">
+        <form method="dialog">
+		    <input type="text" id="civilianInput" placeholder="平民題目" required>
+            <input type="text" id="spyInput" placeholder="間諜題目" required>     
+            <div class="dialog-buttons">
+                <button id="cancelSetBtn" type="reset">取消</button>
+                <button id="confirmSetBtn" type="submit">確定</button>
+            </div>
+        </form>
+    </dialog>
 
     <div id="ruleBox" style="display:none; position: fixed; top: 60px; right: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 12px; z-index: 999; max-width: 300px; font-size: 14px;">
         <div id="rule" style="font-weight: bold; margin-bottom: 6px;">規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝。</div>
@@ -342,6 +396,7 @@
         </table>
     </div>
 
+
     <script src="config.js"></script>
     <script>
         // === 全域變數區 ===
@@ -350,15 +405,20 @@
         const confirmNamesBtn = document.getElementById('confirmNamesBtn');
         const restartBtn = document.getElementById('restartBtn');
         const whiteCardBtn = document.getElementById('whiteCardBtn');
+        const addSetBtn = document.getElementById('addSetBtn');
         const doneFlipBtn = document.getElementById('doneFlipBtn');
         const game = document.getElementById('game');
         const executionResult = document.getElementById('executionResult');
         const nameInputContainer = document.getElementById('nameInputContainer');
         const messageDiv = document.getElementById('message');
+        const dialog = document.getElementById("topicDialog");
+        const spyInput = document.getElementById("spyInput");
+        const civilianInput = document.getElementById("civilianInput");
+        const confirmSetBtn = document.getElementById("confirmSetBtn");
+        const cancelSetBtn = document.getElementById("cancelSetBtn");
 
         let currentLang = 'zh';
         let flippedState = [];
-        let realSpyIndex = -1;
         let cards = [];
         let executing = false;
         let lock = false;
@@ -366,8 +426,11 @@
         let playerNames = [];
         let foundSpiesCount = 0;
         let whiteCardUsed = false;
+        let addSetUsed = false;
         let spyIndexes = [];
- 
+        let spyWord = '';
+        let normalWord = '';
+
         // === 規則顯示 ===
         const ruleToggle = document.getElementById('ruleToggle');
         const ruleBox = document.getElementById('ruleBox');
@@ -399,7 +462,7 @@
                 input.id = `playerName${i}`;
                 nameInputContainer.appendChild(input);
             }
-            confirmNamesBtn.textContent = i18n[currentLang].confirm;
+            confirmNamesBtn.textContent = i18n[currentLang].confirmName;
             confirmNamesBtn.style.display = 'inline-block';
             startBtn.style.display = 'none';
             document.getElementById('logo').style.display = 'none';
@@ -462,24 +525,48 @@
             whiteCardBtn.style.cursor = 'not-allowed'; // 滑鼠變禁止狀態
         };
 
+        addSetBtn.addEventListener("click", () => {
+            if (addSetUsed) return;
+			spyInput.value = '';
+            civilianInput.value = '';
+            dialog.showModal();
+        });
+
+        confirmSetBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const spyWord = spyInput.value.trim();
+            const normalWord = civilianInput.value.trim();
+            if (spyWord && normalWord) {
+
+                const customSet = [{
+                        text: spyWord,
+                        img: ''
+                    }, // 你也可以給定圖片路徑
+                    {
+                        text: normalWord,
+                        img: ''
+                    }
+                ];
+
+                resetBtnStatus();
+                initGame(playerCount, playerNames, customSet);
+
+                // 停用按鈕
+                addSetUsed = true;
+                addSetBtn.disabled = true; // 禁用按鈕
+                addSetBtn.style.background = '#A52A2A'; // 變紅色
+                addSetBtn.style.cursor = 'not-allowed'; // 滑鼠變禁止狀態
+                dialog.close();
+            }
+        });
+
+        cancelSetBtn.addEventListener("click", () => {
+            dialog.close();
+        });
 
         restartBtn.onclick = () => {
-            game.innerHTML = '';
-            executionResult.textContent = '';
-            executionResult.className = '';
-            doneFlipBtn.style.display = 'none';
-            restartBtn.style.display = 'inline-block';
-            messageDiv.textContent = i18n[currentLang].flip;
-            messageDiv.style.display = 'block';
-            executing = false;
-            flippedState = Array(playerCount).fill(0);
-            whiteCardBtn.style.display = 'none';
-            whiteCardUsed = false;
-            whiteCardBtn.disabled = false;
-            whiteCardBtn.style.background = '#2e59d9';
-            whiteCardBtn.style.cursor = 'pointer';
+            resetBtnStatus();
             initGame(playerCount, playerNames);
-
         };
 
         // === function 類 ===
@@ -487,7 +574,7 @@
             document.title = i18n[currentLang].title;
             document.getElementById('logoTitle').textContent = i18n[currentLang].title;
             document.getElementById('startBtn').textContent = i18n[currentLang].start;
-            document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirm;
+            document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirmName;
             document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
             document.getElementById('whiteCardBtn').textContent = i18n[currentLang].whiteCard;
             document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
@@ -497,6 +584,11 @@
             document.getElementById('colPlayer').textContent = i18n[currentLang].colPlayer;
             document.getElementById('colSpy').textContent = i18n[currentLang].colSpy;
             document.getElementById('colMissKill').textContent = i18n[currentLang].colMissKill;
+			document.getElementById('civilianInput').placeholder = i18n[currentLang].civilianInput;
+            document.getElementById('spyInput').placeholder = i18n[currentLang].spyInput;
+			document.getElementById('confirmSetBtn').textContent = i18n[currentLang].confirm;
+            document.getElementById('cancelSetBtn').textContent = i18n[currentLang].cancel;
+			
 
             const inputs = document.querySelectorAll('#nameInputContainer input');
             inputs.forEach((input, i) => {
@@ -517,7 +609,33 @@
             return Array.from(indexes);
         }
 
-        function initGame(playerCount, playerNames) {
+        function resetBtnStatus() {
+            game.innerHTML = '';
+            spyWord = '';
+            normalWord = '';
+            executionResult.textContent = '';
+            executionResult.className = '';
+            doneFlipBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block';
+            messageDiv.textContent = i18n[currentLang].flip;
+            messageDiv.style.display = 'block';
+            executing = false;
+            flippedState = Array(playerCount).fill(0);
+
+            whiteCardUsed = false;
+            whiteCardBtn.style.display = 'none';
+            whiteCardBtn.disabled = false;
+            whiteCardBtn.style.background = '#2e59d9';
+            whiteCardBtn.style.cursor = 'pointer';
+
+            addSetUsed = false;
+            addSetBtn.style.display = 'none';
+            addSetBtn.disabled = false;
+            addSetBtn.style.background = '#2e59d9';
+            addSetBtn.style.cursor = 'pointer';
+        }
+
+        function initGame(playerCount, playerNames, customSet = null) {
             document.getElementById('start').style.display = 'none';
             game.style.display = 'grid';
             game.innerHTML = '';
@@ -525,32 +643,46 @@
             executionResult.className = '';
             restartBtn.style.display = 'inline-block';
             doneFlipBtn.style.display = 'none';
+
             whiteCardBtn.style.display = 'inline-block';
             whiteCardBtn.style.background = '#2e59d9';
             whiteCardBtn.disabled = false;
+
+            addSetBtn.style.display = 'inline-block';
+            addSetBtn.style.background = '#2e59d9';
+            addSetBtn.disabled = false;
+
             flippedState = Array(playerCount).fill(0);
             executing = false;
             foundSpiesCount = 0;
-            const set = sets[Math.floor(Math.random() * sets.length)];
+
+            const set = customSet || sets[Math.floor(Math.random() * sets.length)];
+            spyWord = set[0];
+            normalWord = set[1];
+
             const spyNum = window.spyNum || 1;
             spyIndexes = getSpyIndexes(playerCount, spyNum);
-            const spyWord = set[0];
-            const normalWord = set[1];
-            const words = Array(playerCount).fill().map((_, i) => spyIndexes.includes(i) ? spyWord : normalWord);
+
+            const words = Array(playerCount).fill().map((_, i) =>
+                spyIndexes.includes(i) ? spyWord : normalWord
+            );
+
+            messageDiv.textContent = i18n[currentLang].flip;
+            messageDiv.style.display = 'block';
 
             cards = words.map((word, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-				<div class="player-label">${playerNames[index]}</div>
-				<div class="inner">
-					<div class="face back">${i18n[currentLang].flipMe}</div>
-					<div class="face front">
-						<div class="img-container"><img src="${word.img}" style="max-width: 100%; height: auto;" /></div>
-						<div class="text-container">${word.text}</div>
-						<div class="execution-result" id="execResult${index}"></div>
-					</div>
-				</div>`;
+            <div class="player-label">${playerNames[index]}</div>
+            <div class="inner">
+                <div class="face back">${i18n[currentLang].flipMe}</div>
+                <div class="face front">
+                    <div class="img-container"><img src="${word.img}" style="max-width: 100%; height: auto;" /></div>
+                    <div class="text-container">${word.text}</div>
+                    <div class="execution-result" id="execResult${index}"></div>
+                </div>
+            </div>`;
 
                 let localLock = false;
                 card.addEventListener('click', () => {
@@ -561,6 +693,12 @@
                         whiteCardBtn.disabled = true;
                         whiteCardBtn.style.background = 'gray';
                         whiteCardBtn.style.cursor = 'not-allowed';
+                    }
+                    if (!addSetUsed) {
+                        addSetUsed = true;
+                        addSetBtn.disabled = true;
+                        addSetBtn.style.background = 'gray';
+                        addSetBtn.style.cursor = 'not-allowed';
                     }
 
                     if (!executing) {
@@ -581,11 +719,7 @@
                         }, 500);
                     } else {
                         const execDiv = document.getElementById(`execResult${index}`);
-
-                        if (execDiv.textContent !== '') {
-                            return;
-                        }
-
+                        if (execDiv.textContent !== '') return;
 
                         const frontImgDiv = card.querySelector('.front .img-container');
                         const frontTextDiv = card.querySelector('.front .text-container');
@@ -617,8 +751,9 @@
                 game.appendChild(card);
                 return card;
             });
+
             console.log("DEBUG 平民是：", normalWord.text);
-            console.log("DEBUG 間諜是：", realSpyIndex + 1, spyWord.text);
+            console.log("DEBUG 間諜是：", spyWord.text);
         }
     </script>
 </body>
