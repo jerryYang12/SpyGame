@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spy Game v26</title>
+    <title>Spy Game v26.2</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -206,23 +206,18 @@
         #startBtn,
         #doneFlipBtn,
         #confirmNamesBtn,
-        #restartBtn,
-        #whiteCardBtn,
-        #addSetBtn,
         #topButtons button {
-            background: #2e59d9;
-            color: #fff;
-            font-weight: bold;
-            letter-spacing: 1px;
-            transition: background 0.3s, transform 0.2s;
-        }
+			background: #2e59d9;
+			color: #fff;
+			font-weight: bold;
+			letter-spacing: 1px;
+			transition: background 0.3s, transform 0.2s;
+			height: 40px;
+		}
 
         #startBtn:hover,
         #doneFlipBtn:hover,
         #confirmNamesBtn:hover,
-        #restartBtn:hover,
-        #whiteCardBtn:hover,
-        #addSetBtn,
         #topButtons button:hover {
             background: #4a75f0;
             transform: scale(1.05);
@@ -244,7 +239,7 @@
             gap: 10px;
             z-index: 10;
         }
-
+		
         table {
             border-collapse: collapse;
         }
@@ -260,6 +255,7 @@
             padding: 1em;
             border: none;
             border-radius: 8px;
+			margin-top: 120px;
         }
 
         form {
@@ -310,7 +306,6 @@
         <button id="whiteCardBtn" style="display:none;">放入白卡</button>
         <button id="langToggle">EN</button>
         <button id="ruleToggle">R</button>
-
     </div>
     <div id="logo">
         <span>🕵️</span>
