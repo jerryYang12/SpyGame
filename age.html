@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Age Table</title>
+  <style>
+    body {
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      margin: 0;
+      padding: 1em;
+      background: #f0f2f5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+      font-size: 24px;
+      color: #333;
+    }
+    .timeline-wrapper {
+      overflow-x: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      padding: 1em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      text-align: center;
+      font-size: 14px;
+      min-width: 44px;
+    }
+    th.sticky {
+      position: sticky;
+      left: 0;
+      background: #f8f8f8;
+      z-index: 2;
+    }
+    td.sticky {
+      position: sticky;
+      left: 0;
+      background: #f0f0f0;
+      font-weight: bold;
+      z-index: 1;
+    }
+    td.empty {
+      background-color: #eee;
+      color: #aaa;
+    }
+    td.highlight {
+      background-color: #ffe0e0;
+      font-weight: bold;
+      color: #c00;
+    }
+    td.age18 {
+      background-color: #d0f0ff !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Age Table</h1>
+  <div class="timeline-wrapper">
+    <table id="ageTable"></table>
+  </div>
+
+  <script>
+    const people = [
+      { name: "R Gong", birth: 1953 },
+      { name: "R MA", birth: 1955 },
+      { name: "Doris", birth: 1982 },
+	  { name: "Steve", birth: 1982 },
+      { name: "Iris", birth: 1984 },
+      { name: "Jerry", birth: 1988 },
+      { name: "Niou", birth: 1991 },
+      { name: "Ariel", birth: 2013 },
+      { name: "Lily", birth: 2017 }
+    ];
+
+    const startYear = 1953;
+    const endYear = 2038;
+    const currentYear = new Date().getFullYear();
+
+    const table = document.getElementById("ageTable");
+
+    const header = document.createElement("tr");
+    const firstTh = document.createElement("th");
+    firstTh.classList.add("sticky");
+    firstTh.textContent = "姓名";
+    header.appendChild(firstTh);
+
+    for (let y = startYear; y <= endYear; y++) {
+      const th = document.createElement("th");
+      th.textContent = y;
+      if (y === currentYear) th.classList.add("highlight");
+      header.appendChild(th);
+    }
+    table.appendChild(header);
+
+    people.forEach(person => {
+      const tr = document.createElement("tr");
+      const nameTd = document.createElement("td");
+      nameTd.textContent = person.name;
+      nameTd.classList.add("sticky");
+      tr.appendChild(nameTd);
+
+      for (let y = startYear; y <= endYear; y++) {
+        const td = document.createElement("td");
+        if (y < person.birth) {
+          td.classList.add("empty");
+          td.textContent = "";
+        } else {
+          const age = y - person.birth;
+          td.textContent = age;
+          if (y === currentYear) td.classList.add("highlight");
+          if (age === 18) td.classList.add("age18");
+        }
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

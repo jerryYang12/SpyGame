@@ -145,7 +145,7 @@ notSpy: "❌ 不是間諜。",
 placeholderCount: "玩家人數",
 spyCountPlaceholder: "間諜人數 (預設1)",
 flipMe: "點我翻牌",
-rule: "規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝",
+rule: "規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝。",
 colPlayer: "玩家",
 colSpy: "間諜",
 colMissKill: "誤殺"
