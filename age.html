@@ -4,70 +4,73 @@
   <meta charset="UTF-8">
   <title>Age Table</title>
   <style>
-    body {
-      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
-      margin: 0;
-      padding: 1em;
-      background: #f0f2f5;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1em;
-      font-size: 24px;
-      color: #333;
-    }
-    .timeline-wrapper {
-      overflow-x: auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: white;
-      padding: 1em;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    table {
-      border-collapse: collapse;
-      width: max-content;
-      min-width: 100%;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px 8px;
-      text-align: center;
-      font-size: 14px;
-      min-width: 44px;
-    }
-    th.sticky {
-      position: sticky;
-      left: 0;
-      background: #f8f8f8;
-      z-index: 2;
-    }
-    td.sticky {
-      position: sticky;
-      left: 0;
-      background: #f0f0f0;
-      font-weight: bold;
-      z-index: 1;
-    }
-    td.empty {
-      background-color: #eee;
-      color: #aaa;
-    }
-    td.highlight {
-      background-color: #ffe0e0;
-      font-weight: bold;
-      color: #c00;
-    }
-    td.age18 {
-      background-color: #d0f0ff !important;
-      font-weight: bold;
-    }
+.timeline-wrapper {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.scroll-inner {
+  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+table {
+  border-collapse: collapse;
+  width: max-content;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 18px;
+  min-width: 50px;
+}
+
+th.sticky,
+td.sticky {
+  position: sticky;
+  left: 0;
+  background: #f8f8f8;
+  z-index: 2;
+  box-shadow: 2px 0 3px rgba(0, 0, 0, 0.05);
+}
+
+td.sticky {
+  background: #f0f0f0;
+  font-weight: bold;
+  z-index: 1;
+}
+
+td.empty {
+  background-color: #eee;
+  color: #aaa;
+}
+
+td.highlight {
+  background-color: #d0f0ff;
+  font-weight: bold;
+}
+
+td.age18 {
+  background-color: #ffe0e0 !important;
+  font-weight: bold;
+   color: #c00;
+}
   </style>
 </head>
 <body>
   <h1>Age Table</h1>
-  <div class="timeline-wrapper">
+<div class="timeline-wrapper">
+  <div class="scroll-inner">
     <table id="ageTable"></table>
+ 
+  </div>
   </div>
 
   <script>
@@ -92,7 +95,7 @@
     const header = document.createElement("tr");
     const firstTh = document.createElement("th");
     firstTh.classList.add("sticky");
-    firstTh.textContent = "姓名";
+    firstTh.textContent = "Name";
     header.appendChild(firstTh);
 
     for (let y = startYear; y <= endYear; y++) {
@@ -116,8 +119,10 @@
           td.classList.add("empty");
           td.textContent = "";
         } else {
-          const age = y - person.birth;
-          td.textContent = age;
+
+		  const age = y - person.birth;
+		  td.textContent = age === 0 ? "🎂" : age;
+ 
           if (y === currentYear) td.classList.add("highlight");
           if (age === 18) td.classList.add("age18");
         }
