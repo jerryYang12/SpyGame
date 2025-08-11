@@ -3,13 +3,30 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spy Game v26.2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Spy Game v27.1</title>
     <style>
+        :root {
+            --bg: #1e1e1e;
+            --fg: #e0e0e0;
+            --gold: #d4af37;
+            --btn: #2e59d9;
+            --btn-hover: #4a75f0;
+            --muted: #777;
+            --card-back-a: #3a3a3a;
+            --card-back-b: #2b2b2b;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #1e1e1e;
-            color: #e0e0e0;
+            background: var(--bg);
+            color: var(--fg);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,10 +37,14 @@
             box-sizing: border-box;
         }
 
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            visibility: hidden
+        }
+
         #logo {
             text-align: center;
-            margin-bottom: 15px;
-            transition: opacity 0.8s ease;
         }
 
         #logo.hidden {
@@ -36,17 +57,16 @@
             display: block;
             font-size: 72px;
             line-height: 1;
-            margin-bottom: 5px;
         }
 
         #logo h1 {
-            margin: 0;
             font-size: 26px;
             font-weight: bold;
-            color: #d4af37;
-            letter-spacing: 2px;
+            color: var(--gold);
+            margin: 0
         }
 
+        /* grid */
         #game {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -56,6 +76,7 @@
             max-width: 1000px;
         }
 
+        /* 卡牌 */
         .card {
             position: relative;
             width: 100%;
@@ -70,10 +91,8 @@
         .inner {
             position: absolute;
             inset: 0;
-            width: 100%;
-            height: 100%;
             transform-style: preserve-3d;
-            transition: transform 0.8s;
+            transition: transform .8s;
         }
 
         .flipped .inner {
@@ -84,16 +103,12 @@
         .front,
         .back {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             border-radius: 12px;
             backface-visibility: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
             text-align: center;
             padding: 10px;
             box-sizing: border-box;
@@ -115,13 +130,13 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .4), transparent);
             transform: rotate(25deg) translateX(-100%);
             pointer-events: none;
         }
 
         .card.flipped .back::after {
-            animation: shine 0.8s forwards;
+            animation: shine .8s forwards;
         }
 
         .card.viewed .back {
@@ -151,7 +166,7 @@
             width: 100%;
             text-align: center;
             font-weight: bold;
-            color: white;
+            color: #fff;
         }
 
         .execution-result {
@@ -168,6 +183,7 @@
             color: #f44336;
         }
 
+        /* 按鈕、輸入的共用樣式 */
         button,
         input {
             padding: 10px;
@@ -176,6 +192,17 @@
             border-radius: 8px;
             border: none;
             outline: none;
+            box-sizing: border-box;
+        }
+
+        input {
+            background: #2c2c2c;
+            color: #f0f0f0;
+            border: 1px solid #444;
+        }
+
+        input::placeholder {
+            color: #bbb;
         }
 
         .start-inputs {
@@ -189,48 +216,34 @@
             display: block;
             margin-bottom: 8px;
             width: 200px;
-            font-size: 16px;
             padding: 6px 8px;
         }
 
-        input {
-            background: #2c2c2c;
-            color: #f0f0f0;
-            border: 1px solid #444;
+        /* 抽出的共用按鈕樣式 */
+        .btn-primary {
+            background: var(--btn);
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: background .3s, transform .2s;
+            height: 40px;
+            cursor: pointer;
         }
 
-        input::placeholder {
-            color: #bbb;
-        }
-
-        #startBtn,
-        #doneFlipBtn,
-        #confirmNamesBtn,
-        #topButtons button {
-			background: #2e59d9;
-			color: #fff;
-			font-weight: bold;
-			letter-spacing: 1px;
-			transition: background 0.3s, transform 0.2s;
-			height: 40px;
-		}
-
-        #startBtn:hover,
-        #doneFlipBtn:hover,
-        #confirmNamesBtn:hover,
-        #topButtons button:hover {
-            background: #4a75f0;
+        .btn-primary:hover {
+            background: var(--btn-hover);
             transform: scale(1.05);
         }
 
         #message {
-            color: #d4af37;
+            color: var(--gold);
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 30px;
             display: none;
         }
 
+        /* top buttons group */
         #topButtons {
             position: fixed;
             top: 10px;
@@ -239,13 +252,13 @@
             gap: 10px;
             z-index: 10;
         }
-		
+
         table {
             border-collapse: collapse;
         }
 
-        table th,
-        table td {
+        th,
+        td {
             border: 1px solid #999;
             padding: 6px 12px;
             text-align: center;
@@ -255,43 +268,36 @@
             padding: 1em;
             border: none;
             border-radius: 8px;
-			margin-top: 120px;
+            margin-top: 120px;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            gap: 0.5em;
+            gap: .5em;
         }
 
-        input {
-            padding: 0.5em;
-            font-size: 1em;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.5em;
-        }
-
-        .btn-group button {
-            flex: 1;
-            padding: 0.5em;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-group button[type="submit"] {
-            background: #2e59d9;
+        #ruleBox {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: #333;
             color: #fff;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 12px;
+            z-index: 999;
+            max-width: 300px;
+            font-size: 14px;
         }
 
-        .btn-group button[type="reset"] {
-            background: #ccc;
-            color: #333;
+        #rule {
+            font-weight: bold;
+            margin-bottom: 6px;
         }
 
-        @media (max-width: 800px) and (orientation: landscape) {
+        @media (max-width:800px) and (orientation:landscape) {
             #game {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -301,44 +307,46 @@
 
 <body>
     <div id="topButtons">
-        <button id="restartBtn" style="display:none;">重新遊戲</button>
-        <button id="addSetBtn" style="display:none;">+</button>
-        <button id="whiteCardBtn" style="display:none;">放入白卡</button>
-        <button id="langToggle">EN</button>
-        <button id="ruleToggle">R</button>
+        <button id="restartBtn" class="btn-primary hidden">重新遊戲</button>
+        <button id="addSetBtn" class="btn-primary hidden">+</button>
+        <button id="whiteCardBtn" class="btn-primary hidden">放入白卡</button>
+        <button id="langToggle" class="btn-primary">EN</button>
+        <button id="ruleToggle" class="btn-primary">R</button>
     </div>
+
     <div id="logo">
         <span>🕵️</span>
         <h1 id="logoTitle">間諜遊戲</h1>
     </div>
+
     <div id="start">
         <div class="start-inputs">
-            <input id="playerCount" type="number" min="2" placeholder="玩家人數" />
-            <input id="spyCount" type="number" min="1" placeholder="間諜人數 (預設1)" />
-            <button id="startBtn">開始遊戲</button>
-            <div id="nameInputContainer" style="margin-top: 10px;"></div>
-            <button id="confirmNamesBtn" style="display:none;">確定名字</button>
+            <input id="playerCountInput" type="number" min="2" placeholder="玩家人數" />
+            <input id="spyCountInput" type="number" min="1" placeholder="間諜人數 (預設1)" />
+            <button id="startBtn" class="btn-primary">開始遊戲</button>
+            <div id="nameInputContainer"></div>
+            <button id="confirmNamesBtn" class="btn-primary hidden">確定名字</button>
         </div>
     </div>
-    <div id="message"></div>
+
+    <div id="message" class="hidden"></div>
     <div id="game"></div>
-    <button id="doneFlipBtn" style="display:none;">大家都翻完牌了！</button>
-    <div id="executionResult"></div>
+    <button id="doneFlipBtn" class="btn-primary hidden">大家都翻完牌了！</button>
 
     <dialog id="topicDialog" class="clean-dialog">
         <form method="dialog">
-		    <input type="text" id="civilianInput" placeholder="平民題目" required>
-            <input type="text" id="spyInput" placeholder="間諜題目" required>     
+            <input type="text" id="civilianInput" placeholder="平民題目" required />
+            <input type="text" id="spyInput" placeholder="間諜題目" required />
             <div class="dialog-buttons">
-                <button id="cancelSetBtn" type="reset">取消</button>
-                <button id="confirmSetBtn" type="submit">確定</button>
+                <button id="cancelSetBtn" type="reset" class="btn-primary">取消</button>
+                <button id="confirmSetBtn" type="submit" class="btn-primary">確定</button>
             </div>
         </form>
     </dialog>
 
-    <div id="ruleBox" style="display:none; position: fixed; top: 60px; right: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 12px; z-index: 999; max-width: 300px; font-size: 14px;">
-        <div id="rule" style="font-weight: bold; margin-bottom: 6px;">規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝。</div>
-        <table border="1" style="width:100%; border-collapse: collapse;">
+    <div id="ruleBox" class="hidden">
+        <div id="rule">規則僅供參考: 抓到所有間諜，平民勝。誤殺達標，間諜勝。</div>
+        <table>
             <thead>
                 <tr>
                     <th id="colPlayer">玩家</th>
@@ -391,364 +399,356 @@
         </table>
     </div>
 
-
+    <!-- external config: sets / i18n assumed in config.js -->
     <script src="config.js"></script>
     <script>
-        // === 全域變數區 ===
-        const langToggle = document.getElementById('langToggle');
-        const startBtn = document.getElementById('startBtn');
-        const confirmNamesBtn = document.getElementById('confirmNamesBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const whiteCardBtn = document.getElementById('whiteCardBtn');
-        const addSetBtn = document.getElementById('addSetBtn');
-        const doneFlipBtn = document.getElementById('doneFlipBtn');
-        const game = document.getElementById('game');
-        const executionResult = document.getElementById('executionResult');
-        const nameInputContainer = document.getElementById('nameInputContainer');
-        const messageDiv = document.getElementById('message');
-        const dialog = document.getElementById("topicDialog");
-        const spyInput = document.getElementById("spyInput");
-        const civilianInput = document.getElementById("civilianInput");
-        const confirmSetBtn = document.getElementById("confirmSetBtn");
-        const cancelSetBtn = document.getElementById("cancelSetBtn");
+		const getDOM = (...ids) =>
+		  ids.reduce((acc, id) => {
+			acc[id] = document.getElementById(id);
+			return acc;
+		  }, {});
 
-        let currentLang = 'zh';
-        let flippedState = [];
-        let cards = [];
-        let executing = false;
-        let lock = false;
-        let playerCount = 0;
-        let playerNames = [];
-        let foundSpiesCount = 0;
-        let whiteCardUsed = false;
-        let addSetUsed = false;
-        let spyIndexes = [];
-        let spyWord = '';
-        let normalWord = '';
+		const DOM = getDOM(
+		  'langToggle', 'startBtn', 'confirmNamesBtn', 'restartBtn',
+		  'whiteCardBtn', 'addSetBtn', 'doneFlipBtn', 'game',
+		  'nameInputContainer', 'message', 'topicDialog', 'spyInput',
+		  'civilianInput', 'confirmSetBtn', 'cancelSetBtn', 'ruleToggle',
+		  'ruleBox', 'logo', 'playerCountInput', 'spyCountInput', 'logoTitle',
+		  'rule', 'colPlayer', 'colSpy', 'colMissKill'
+		);
 
-        // === 規則顯示 ===
-        const ruleToggle = document.getElementById('ruleToggle');
-        const ruleBox = document.getElementById('ruleBox');
+        let currentLang = 'zh',
+            flippedState = [],
+            cards = [],
+            executing = false,
+            lock = false,
+            playerCount = 0,
+            playerNames = [],
+            foundSpiesCount = 0,
+            whiteCardUsed = false,
+            addSetUsed = false,
+            spyIndexes = [],
+            spyWord = '',
+            normalWord = '';
 
-        ruleToggle.onclick = () => {
-            ruleBox.style.display = ruleBox.style.display === 'none' ? 'block' : 'none';
+        const show = el => el && (el.classList.remove('hidden'), el.style.setProperty('display', 'block', 'important'));
+        const hide = el => el && el.classList.add('hidden');
+
+        const setBtnState = (btn, {
+            disabled,
+            bg,
+            cursor
+        }) => {
+            if (!btn) return;
+            btn.disabled = disabled;
+            btn.style.background = bg;
+            btn.style.cursor = cursor;
+        }
+
+        DOM.ruleToggle.onclick = () => {
+            const isHidden = DOM.ruleBox.classList.contains('hidden');
+            isHidden ? show(DOM.ruleBox) : hide(DOM.ruleBox);
         };
 
-        // === 事件監聽區 ===
-        langToggle.onclick = () => {
+        DOM.langToggle.onclick = () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            langToggle.textContent = currentLang === 'zh' ? 'EN' : '中';
-            updateText();
+            DOM.langToggle.textContent = currentLang === 'zh' ? 'EN' : '中';
+            if (typeof updateText === 'function') updateText();
         };
 
-        startBtn.onclick = () => {
-            const num = parseInt(document.getElementById('playerCount').value);
+        DOM.startBtn.onclick = () => {
+            const num = +DOM.playerCountInput.value;
             if (!num || num < 3) return alert(i18n[currentLang].alert);
-            const spyNum = parseInt(document.getElementById('spyCount').value) || 1;
+            const spyNum = +DOM.spyCountInput.value || 1;
             if (!spyNum || spyNum < 1 || spyNum >= num) return alert(i18n[currentLang].alert2);
+
             window.spyNum = spyNum;
             playerCount = num;
-            nameInputContainer.innerHTML = '';
-            messageDiv.style.display = 'none';
+            DOM.nameInputContainer.innerHTML = '';
+            hide(DOM.message);
+
             for (let i = 1; i <= playerCount; i++) {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.placeholder = i18n[currentLang].inputName(i);
                 input.id = `playerName${i}`;
-                nameInputContainer.appendChild(input);
+                DOM.nameInputContainer.appendChild(input);
             }
-            confirmNamesBtn.textContent = i18n[currentLang].confirmName;
-            confirmNamesBtn.style.display = 'inline-block';
-            startBtn.style.display = 'none';
-            document.getElementById('logo').style.display = 'none';
-            document.getElementById('playerCount').style.display = 'none';
-            document.getElementById('spyCount').style.display = 'none';
+
+            DOM.confirmNamesBtn.textContent = i18n[currentLang].confirmName;
+            show(DOM.confirmNamesBtn);
+            hide(DOM.startBtn);
+            hide(DOM.logo);
+            hide(DOM.playerCountInput);
+            hide(DOM.spyCountInput);
         };
 
-        confirmNamesBtn.onclick = () => {
-            playerNames = [];
-            for (let i = 1; i <= playerCount; i++) {
-                const val = document.getElementById(`playerName${i}`).value.trim();
-                playerNames.push(val || `${Math.floor(1 + Math.random() * 99)}`);
-            }
-            messageDiv.style.display = 'block';
-            messageDiv.textContent = i18n[currentLang].flip;
-            confirmNamesBtn.style.display = 'none';
+        DOM.confirmNamesBtn.onclick = () => {
+            playerNames = Array.from({
+                length: playerCount
+            }, (_, i) => {
+                const val = document.getElementById(`playerName${i + 1}`)?.value.trim();
+                return val || `${Math.floor(1 + Math.random() * 99)}`;
+            });
+            DOM.message.textContent = i18n[currentLang].flip;
+            show(DOM.message);
+            hide(DOM.confirmNamesBtn);
             initGame(playerCount, playerNames);
         };
 
-        doneFlipBtn.onclick = () => {
+        DOM.doneFlipBtn.onclick = () => {
             executing = true;
-            messageDiv.textContent = i18n[currentLang].execute;
-            messageDiv.style.display = 'block';
-            doneFlipBtn.style.display = 'none';
-            executionResult.textContent = '';
-            executionResult.className = '';
+            DOM.message.textContent = i18n[currentLang].execute;
+            show(DOM.message);
+            hide(DOM.doneFlipBtn);
         };
 
-        whiteCardBtn.onclick = () => {
+        DOM.whiteCardBtn.onclick = () => {
             if (whiteCardUsed) return;
-
-            // 找出平民的 index（不是間諜的）
-            const set = sets[Math.floor(Math.random() * sets.length)];
-            const spyNum = window.spyNum || 1;
-            while (spyIndexes.size < spyNum) {
-                spyIndexes.add(Math.floor(Math.random() * playerCount));
+            const set = (typeof sets !== 'undefined' && sets.length) ? sets[Math.floor(Math.random() * sets.length)] : null;
+            while (spyIndexes.length < (window.spyNum || 1)) {
+                spyIndexes.push(Math.floor(Math.random() * playerCount));
+                spyIndexes = [...new Set(spyIndexes)];
             }
-
             const whiteCandidates = cards.map((_, i) => i).filter(i => !spyIndexes.includes(i));
-
-            if (whiteCandidates.length === 0) return;
-
-            // 隨機選一個平民設為白卡
+            if (!whiteCandidates.length) return;
             const whiteIndex = whiteCandidates[Math.floor(Math.random() * whiteCandidates.length)];
             const card = cards[whiteIndex];
-
-            // 移除圖片與文字
-            const frontImgDiv = card.querySelector('.front .img-container');
-            const frontTextDiv = card.querySelector('.front .text-container');
-            if (frontImgDiv) frontImgDiv.remove();
-            if (frontTextDiv) frontTextDiv.textContent = '';
-
-            // 標記為白卡（處決時不顯示內容）
+            card.querySelector('.front .img-container')?.remove();
+            if (card.querySelector('.front .text-container')) card.querySelector('.front .text-container').textContent = '';
             card.dataset.isWhite = "true";
-
-            // 停用按鈕
             whiteCardUsed = true;
-            whiteCardBtn.disabled = true; // 禁用按鈕
-            whiteCardBtn.style.background = '#A52A2A'; // 變紅色
-            whiteCardBtn.style.cursor = 'not-allowed'; // 滑鼠變禁止狀態
+            setBtnState(DOM.whiteCardBtn, {
+                disabled: true,
+                bg: '#A52A2A',
+                cursor: 'not-allowed'
+            });
         };
 
-        addSetBtn.addEventListener("click", () => {
+        DOM.addSetBtn.onclick = () => {
             if (addSetUsed) return;
-			spyInput.value = '';
-            civilianInput.value = '';
-            dialog.showModal();
-        });
+            DOM.spyInput.value = '';
+            DOM.civilianInput.value = '';
+            DOM.dialog.showModal();
+        };
 
-        confirmSetBtn.addEventListener("click", (e) => {
+        DOM.confirmSetBtn.onclick = e => {
             e.preventDefault();
-            const spyWord = spyInput.value.trim();
-            const normalWord = civilianInput.value.trim();
-            if (spyWord && normalWord) {
-
+            const spyW = DOM.spyInput.value.trim(),
+                normalW = DOM.civilianInput.value.trim();
+            if (spyW && normalW) {
                 const customSet = [{
-                        text: spyWord,
-                        img: ''
-                    }, // 你也可以給定圖片路徑
-                    {
-                        text: normalWord,
-                        img: ''
-                    }
-                ];
-
+                    text: spyW,
+                    img: ''
+                }, {
+                    text: normalW,
+                    img: ''
+                }];
                 resetBtnStatus();
                 initGame(playerCount, playerNames, customSet);
-
-                // 停用按鈕
                 addSetUsed = true;
-                addSetBtn.disabled = true; // 禁用按鈕
-                addSetBtn.style.background = '#A52A2A'; // 變紅色
-                addSetBtn.style.cursor = 'not-allowed'; // 滑鼠變禁止狀態
-                dialog.close();
+                setBtnState(DOM.addSetBtn, {
+                    disabled: true,
+                    bg: '#A52A2A',
+                    cursor: 'not-allowed'
+                });
+                DOM.dialog.close();
             }
-        });
+        };
 
-        cancelSetBtn.addEventListener("click", () => {
-            dialog.close();
-        });
+        DOM.cancelSetBtn.onclick = () => DOM.dialog.close();
 
-        restartBtn.onclick = () => {
+        DOM.restartBtn.onclick = () => {
             resetBtnStatus();
             initGame(playerCount, playerNames);
         };
 
-        // === function 類 ===
         function updateText() {
-            document.title = i18n[currentLang].title;
-            document.getElementById('logoTitle').textContent = i18n[currentLang].title;
-            document.getElementById('startBtn').textContent = i18n[currentLang].start;
-            document.getElementById('confirmNamesBtn').textContent = i18n[currentLang].confirmName;
-            document.getElementById('restartBtn').textContent = i18n[currentLang].restart;
-            document.getElementById('whiteCardBtn').textContent = i18n[currentLang].whiteCard;
-            document.getElementById('doneFlipBtn').textContent = i18n[currentLang].done;
-            document.getElementById('playerCount').placeholder = i18n[currentLang].placeholderCount;
-            document.getElementById('spyCount').placeholder = i18n[currentLang].spyCountPlaceholder;
-            document.getElementById('rule').textContent = i18n[currentLang].rule;
-            document.getElementById('colPlayer').textContent = i18n[currentLang].colPlayer;
-            document.getElementById('colSpy').textContent = i18n[currentLang].colSpy;
-            document.getElementById('colMissKill').textContent = i18n[currentLang].colMissKill;
-			document.getElementById('civilianInput').placeholder = i18n[currentLang].civilianInput;
-            document.getElementById('spyInput').placeholder = i18n[currentLang].spyInput;
-			document.getElementById('confirmSetBtn').textContent = i18n[currentLang].confirm;
-            document.getElementById('cancelSetBtn').textContent = i18n[currentLang].cancel;
-			
-
-            const inputs = document.querySelectorAll('#nameInputContainer input');
-            inputs.forEach((input, i) => {
-                input.placeholder = i18n[currentLang].inputName(i + 1);
-            });
+            if (typeof i18n === 'undefined') return;
+            const t = i18n[currentLang];
+            document.title = t.title;
+            DOM.logoTitle.textContent = t.title;
+            DOM.startBtn.textContent = t.start;
+            DOM.confirmNamesBtn.textContent = t.confirmName;
+            DOM.restartBtn.textContent = t.restart;
+            DOM.whiteCardBtn.textContent = t.whiteCard;
+            DOM.doneFlipBtn.textContent = t.done;
+            DOM.playerCountInput.placeholder = t.placeholderCount;
+            DOM.spyCountInput.placeholder = t.spyCountPlaceholder;
+            DOM.rule.textContent = t.rule;
+            DOM.colPlayer.textContent = t.colPlayer;
+            DOM.colSpy.textContent = t.colSpy;
+            DOM.colMissKill.textContent = t.colMissKill;
+            DOM.civilianInput.placeholder = t.civilianInput;
+            DOM.spyInput.placeholder = t.spyInput;
+            DOM.confirmSetBtn.textContent = t.confirm;
+            DOM.cancelSetBtn.textContent = t.cancel;
+            document.querySelectorAll('#nameInputContainer input').forEach((input, i) => input.placeholder = t.inputName(i + 1));
         }
 
         function checkAllFlipped() {
-            const allFlipped = flippedState.every(count => count >= 2);
-            doneFlipBtn.style.display = allFlipped ? 'inline-block' : 'none';
+            flippedState.every(c => c >= 2) ? show(DOM.doneFlipBtn) : hide(DOM.doneFlipBtn);
         }
 
-        function getSpyIndexes(totalPlayers, spyNum) {
-            const indexes = new Set();
-            while (indexes.size < spyNum) {
-                indexes.add(Math.floor(Math.random() * totalPlayers));
-            }
-            return Array.from(indexes);
+        const getSpyIndexes = (total, spyNum) => {
+            const idx = new Set();
+            while (idx.size < spyNum) idx.add(Math.floor(Math.random() * total));
+            return [...idx];
         }
 
         function resetBtnStatus() {
-            game.innerHTML = '';
-            spyWord = '';
-            normalWord = '';
-            executionResult.textContent = '';
-            executionResult.className = '';
-            doneFlipBtn.style.display = 'none';
-            restartBtn.style.display = 'inline-block';
-            messageDiv.textContent = i18n[currentLang].flip;
-            messageDiv.style.display = 'block';
+            DOM.game.innerHTML = '';
+            spyWord = normalWord = '';
+            hide(DOM.doneFlipBtn);
+            show(DOM.restartBtn);
+            DOM.message.textContent = i18n[currentLang].flip;
+            show(DOM.message);
             executing = false;
             flippedState = Array(playerCount).fill(0);
-
             whiteCardUsed = false;
-            whiteCardBtn.style.display = 'none';
-            whiteCardBtn.disabled = false;
-            whiteCardBtn.style.background = '#2e59d9';
-            whiteCardBtn.style.cursor = 'pointer';
-
+            setBtnState(DOM.whiteCardBtn, {
+                disabled: false,
+                bg: '#2e59d9',
+                cursor: 'pointer'
+            });
+            hide(DOM.whiteCardBtn);
             addSetUsed = false;
-            addSetBtn.style.display = 'none';
-            addSetBtn.disabled = false;
-            addSetBtn.style.background = '#2e59d9';
-            addSetBtn.style.cursor = 'pointer';
+            setBtnState(DOM.addSetBtn, {
+                disabled: false,
+                bg: '#2e59d9',
+                cursor: 'pointer'
+            });
+            hide(DOM.addSetBtn);
         }
 
-        function initGame(playerCount, playerNames, customSet = null) {
-            document.getElementById('start').style.display = 'none';
-            game.style.display = 'grid';
-            game.innerHTML = '';
-            executionResult.textContent = '';
-            executionResult.className = '';
-            restartBtn.style.display = 'inline-block';
-            doneFlipBtn.style.display = 'none';
-
-            whiteCardBtn.style.display = 'inline-block';
-            whiteCardBtn.style.background = '#2e59d9';
-            whiteCardBtn.disabled = false;
-
-            addSetBtn.style.display = 'inline-block';
-            addSetBtn.style.background = '#2e59d9';
-            addSetBtn.disabled = false;
-
-            flippedState = Array(playerCount).fill(0);
+        function initGame(pc, pNames, customSet = null) {
+            hide(document.getElementById('start'));
+            DOM.game.style.display = 'grid';
+            DOM.game.innerHTML = '';
+            show(DOM.restartBtn);
+            hide(DOM.doneFlipBtn);
+            show(DOM.whiteCardBtn);
+            setBtnState(DOM.whiteCardBtn, {
+                disabled: false,
+                bg: '#2e59d9',
+                cursor: 'pointer'
+            });
+            show(DOM.addSetBtn);
+            setBtnState(DOM.addSetBtn, {
+                disabled: false,
+                bg: '#2e59d9',
+                cursor: 'pointer'
+            });
+            flippedState = Array(pc).fill(0);
             executing = false;
             foundSpiesCount = 0;
 
-            const set = customSet || sets[Math.floor(Math.random() * sets.length)];
+            const set = customSet || (typeof sets !== 'undefined' && sets.length ? sets[Math.floor(Math.random() * sets.length)] : [{
+                text: '間諜',
+                img: ''
+            }, {
+                text: '平民',
+                img: ''
+            }]);
             spyWord = set[0];
             normalWord = set[1];
-
             const spyNum = window.spyNum || 1;
-            spyIndexes = getSpyIndexes(playerCount, spyNum);
+            spyIndexes = getSpyIndexes(pc, spyNum);
+            const words = Array(pc).fill().map((_, i) => spyIndexes.includes(i) ? spyWord : normalWord);
 
-            const words = Array(playerCount).fill().map((_, i) =>
-                spyIndexes.includes(i) ? spyWord : normalWord
-            );
+            DOM.message.textContent = i18n[currentLang].flip;
+            show(DOM.message);
 
-            messageDiv.textContent = i18n[currentLang].flip;
-            messageDiv.style.display = 'block';
-
-            cards = words.map((word, index) => {
+            cards = words.map((word, i) => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `
-            <div class="player-label">${playerNames[index]}</div>
-            <div class="inner">
-                <div class="face back">${i18n[currentLang].flipMe}</div>
-                <div class="face front">
-                    <div class="img-container"><img src="${word.img}" style="max-width: 100%; height: auto;" /></div>
-                    <div class="text-container">${word.text}</div>
-                    <div class="execution-result" id="execResult${index}"></div>
-                </div>
-            </div>`;
-
+                card.innerHTML = createCardHTML(pNames[i], word, i);
                 let localLock = false;
+
                 card.addEventListener('click', () => {
                     if (lock || localLock) return;
 
                     if (!whiteCardUsed) {
                         whiteCardUsed = true;
-                        whiteCardBtn.disabled = true;
-                        whiteCardBtn.style.background = 'gray';
-                        whiteCardBtn.style.cursor = 'not-allowed';
+                        setBtnState(DOM.whiteCardBtn, {
+                            disabled: true,
+                            bg: 'gray',
+                            cursor: 'not-allowed'
+                        });
                     }
                     if (!addSetUsed) {
                         addSetUsed = true;
-                        addSetBtn.disabled = true;
-                        addSetBtn.style.background = 'gray';
-                        addSetBtn.style.cursor = 'not-allowed';
+                        setBtnState(DOM.addSetBtn, {
+                            disabled: true,
+                            bg: 'gray',
+                            cursor: 'not-allowed'
+                        });
                     }
 
                     if (!executing) {
-                        if (flippedState[index] >= 2) return;
-                        const someOtherFlipped = flippedState.some((count, i) => i !== index && (count % 2 === 1));
-                        if (someOtherFlipped) return;
+                        if (flippedState[i] >= 2) return;
+                        if (flippedState.some((c, j) => j !== i && c % 2 === 1)) return;
                         card.classList.toggle('flipped');
                         card.classList.add('viewed');
-                        flippedState[index]++;
+                        flippedState[i]++;
                         checkAllFlipped();
-                        executionResult.textContent = '';
-                        executionResult.className = '';
-                        lock = true;
-                        localLock = true;
+                        lock = localLock = true;
                         setTimeout(() => {
-                            lock = false;
-                            localLock = false;
+                            lock = localLock = false
                         }, 500);
                     } else {
-                        const execDiv = document.getElementById(`execResult${index}`);
-                        if (execDiv.textContent !== '') return;
-
-                        const frontImgDiv = card.querySelector('.front .img-container');
-                        const frontTextDiv = card.querySelector('.front .text-container');
-                        if (frontImgDiv) frontImgDiv.style.display = 'none';
-                        if (frontTextDiv) frontTextDiv.textContent = '';
-                        if (!card.classList.contains('flipped')) {
-                            card.classList.add('flipped');
-                        }
+                        const execDiv = document.getElementById(`execResult${i}`);
+                        if (execDiv?.textContent) return;
+                        card.querySelector('.front .img-container')?.style.setProperty('display', 'none');
+                        if (card.querySelector('.front .text-container')) card.querySelector('.front .text-container').textContent = '';
+                        if (!card.classList.contains('flipped')) card.classList.add('flipped');
 
                         if (card.dataset.isWhite === "true") {
-                            execDiv.textContent = '';
-                            execDiv.className = '';
+                            if (execDiv) {
+                                execDiv.textContent = '';
+                                execDiv.className = '';
+                            }
                             return;
                         }
 
-                        if (spyIndexes.includes(index)) {
-                            execDiv.textContent = i18n[currentLang].spy;
-                            execDiv.className = 'execution-result success';
+                        if (spyIndexes.includes(i)) {
+                            if (execDiv) {
+                                execDiv.textContent = i18n[currentLang].spy;
+                                execDiv.className = 'execution-result success';
+                            }
                             foundSpiesCount++;
                             if (foundSpiesCount === spyIndexes.length) {
-                                document.getElementById('message').textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
+                                DOM.message.textContent = `${spyWord.text}🕵️ , ${normalWord.text}`;
+                                show(DOM.message);
                             }
                         } else {
-                            execDiv.textContent = i18n[currentLang].notSpy;
-                            execDiv.className = 'execution-result fail';
+                            if (execDiv) {
+                                execDiv.textContent = i18n[currentLang].notSpy;
+                                execDiv.className = 'execution-result fail';
+                            }
                         }
                     }
                 });
-                game.appendChild(card);
+
+                DOM.game.appendChild(card);
                 return card;
             });
 
             console.log("DEBUG 平民是：", normalWord.text);
             console.log("DEBUG 間諜是：", spyWord.text);
+        }
+
+        function createCardHTML(playerName, word, index) {
+            return `
+    <div class="player-label">${playerName}</div>
+    <div class="inner">
+      <div class="face back">${(typeof i18n !== 'undefined' && i18n[currentLang]) ? i18n[currentLang].flipMe : '翻牌'}</div>
+      <div class="face front">
+        <div class="img-container">${word.img ? `<img src="${word.img}" style="max-width:100%;height:auto;">` : ''}</div>
+        <div class="text-container">${word.text}</div>
+        <div class="execution-result" id="execResult${index}"></div>
+      </div>
+    </div>`;
         }
     </script>
 </body>
