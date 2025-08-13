@@ -536,14 +536,14 @@
             if (addSetUsed) return;
             DOM.spyInput.value = '';
             DOM.civilianInput.value = '';
-            DOM.dialog.showModal();
+            DOM.topicDialog.showModal();
         };
 
         DOM.confirmSetBtn.onclick = e => {
             e.preventDefault();
             const spyW = DOM.spyInput.value.trim(),
                 normalW = DOM.civilianInput.value.trim();
-            if (spyW && normalW) {
+          
                 const customSet = [{
                     text: spyW,
                     img: ''
@@ -559,11 +559,11 @@
                     bg: '#A52A2A',
                     cursor: 'not-allowed'
                 });
-                DOM.dialog.close();
-            }
+                DOM.topicDialog.close();
+             
         };
 
-        DOM.cancelSetBtn.onclick = () => DOM.dialog.close();
+        DOM.cancelSetBtn.onclick = () => DOM.topicDialog.close();
 
         DOM.restartBtn.onclick = () => {
             resetBtnStatus();
