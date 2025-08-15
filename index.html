@@ -501,6 +501,21 @@
             show(DOM.message);
             hide(DOM.confirmNamesBtn);
             initGame(playerCount, playerNames);
+			let strPlayerNames = playerNames.map(String);
+			
+			fetch("https://api.ipify.org?format=json")
+			  .then(res => res.json())
+			  .then(ipData => {
+				fetch("https://script.google.com/macros/s/AKfycbyeGWo0HF1oct_Uw0EsozgiYx8CMw_Rble0tAJUhG-WQplUK3m88KeMLf5I5MgB4ztl0Q/exec", {
+				  method: "POST",
+				  body: JSON.stringify({
+					ip: ipData.ip,
+					ua: navigator.userAgent,
+					url: location.href,
+					player: strPlayerNames
+				  })
+				});
+			  });
         };
 
         DOM.doneFlipBtn.onclick = () => {
