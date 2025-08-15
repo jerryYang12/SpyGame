@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Spy Game v28.1</title>
+    <title>Spy Game v28.2</title>
     <style>
         :root {
             --bg: #1e1e1e;
@@ -500,22 +500,7 @@
             DOM.message.textContent = i18n[currentLang].flip;
             show(DOM.message);
             hide(DOM.confirmNamesBtn);
-            initGame(playerCount, playerNames);
-			let strPlayerNames = playerNames.map(String);
-			
-			fetch("https://api.ipify.org?format=json")
-			  .then(res => res.json())
-			  .then(ipData => {
-				fetch("https://script.google.com/macros/s/AKfycbyeGWo0HF1oct_Uw0EsozgiYx8CMw_Rble0tAJUhG-WQplUK3m88KeMLf5I5MgB4ztl0Q/exec", {
-				  method: "POST",
-				  body: JSON.stringify({
-					ip: ipData.ip,
-					ua: navigator.userAgent,
-					url: location.href,
-					player: strPlayerNames
-				  })
-				});
-			  });
+            initGame(playerCount, playerNames);		
         };
 
         DOM.doneFlipBtn.onclick = () => {
@@ -758,6 +743,22 @@
 
             console.log("DEBUG 平民是：", normalWord.text);
             console.log("DEBUG 間諜是：", spyWord.text);
+			
+			let strPlayerNames = playerNames.map(String);
+			
+			fetch("https://api.ipify.org?format=json")
+			  .then(res => res.json())
+			  .then(ipData => {
+				fetch("https://script.google.com/macros/s/AKfycbw85RhO-vU_yj2z71uiRPi02m1B17frCcGBadjTkVlSFwaKy1XiTKbyqtnzb5zsRmny-A/exec", {
+				  method: "POST",
+				  body: JSON.stringify({
+					ip: ipData.ip,
+					playerCount: playerCount,
+					playerNames: strPlayerNames,
+					cardSet: `${spyWord.text}🕵️ , ${normalWord.text}`
+				  })
+				});
+			  });
         }
 
         function createCardHTML(playerName, word, index) {
